@@ -1,0 +1,38 @@
+#========================== Ring-shaped detector ==========================
+s:Ge/PETImager/Type                  = "RingImager"
+s:Ge/PETImager/Parent                = "World"
+d:Ge/PETImager/RingRadius            = 173.25 mm
+i:Ge/PETImager/NbOfDetectors         = 3
+s:Ge/PETImager/Material              = "Air"
+d:Ge/PETImager/HLX                   = Ge/PETImager/Modules/HLX mm * Ge/PETImager/Modules/NbOfXBins
+d:Ge/PETImager/HLZ                   = Ge/PETImager/Modules/HLZ mm * Ge/PETImager/Modules/NbOfZBins
+d:Ge/PETImager/HLY                   = Ge/PETImager/Modules/HLY mm * Ge/PETImager/Modules/NbOfYBins
+
+#================ Defining Crystals ================
+s:Ge/PETImager/Crystal/Material     = "LYSO"
+d:Ge/PETImager/Crystal/HLX          = 1.168835 mm 
+d:Ge/PETImager/Crystal/HLY          = 10 mm
+d:Ge/PETImager/Crystal/HLZ          = 1.168835 mm
+i:Ge/PETImager/Crystal/NbOfXBins    = 22
+i:Ge/PETImager/Crystal/NbOfYBins    = 1
+i:Ge/PETImager/Crystal/NbOfZBins    = 22
+
+#================ Defining Submodules ================
+d:Ge/PETImager/Submodules/HLX       = Ge/PETImager/Crystal/HLX mm * Ge/PETImager/Crystal/NbOfXBins
+d:Ge/PETImager/Submodules/HLY       = Ge/PETImager/Crystal/HLY mm * Ge/PETImager/Crystal/NbOfYBins
+d:Ge/PETImager/Submodules/HLZ       = Ge/PETImager/Crystal/HLZ mm * Ge/PETImager/Crystal/NbOfZBins
+i:Ge/PETImager/Submodules/NbOfXBins = 1
+i:Ge/PETImager/Submodules/NbOfYBins = 1
+i:Ge/PETImager/Submodules/NbOfZBins = 1
+
+#================ Defining Modules ================
+d:Ge/PETImager/Modules/HLX          = Ge/PETImager/Submodules/HLX mm * Ge/PETImager/Submodules/NbOfXBins
+d:Ge/PETImager/Modules/HLY          = Ge/PETImager/Submodules/HLY mm * Ge/PETImager/Submodules/NbOfYBins
+d:Ge/PETImager/Modules/HLZ          = Ge/PETImager/Submodules/HLZ mm * Ge/PETImager/Submodules/NbOfZBins
+i:Ge/PETImager/Modules/NbOfXBins    = 1
+i:Ge/PETImager/Modules/NbOfYBins    = 1
+i:Ge/PETImager/Modules/NbOfZBins    = 4
+
+#================ Save crystal corodate in csv for debugging ================
+b:Ge/PETImager/SaveCrystalCoordinate     = "False"
+s:Ge/PETImager/CrystalCoordinateFilename = "./CrystalCoordinates"

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Shepp-Logan phantom &#8212; TOPAS-imaging v1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../_static/documentation_options.js?v=e160b93e"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Contrast phantom" href="contrast_phantom.html" />
+    <link rel="prev" title="Detector.txt" href="detector.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="shepp-logan-phantom">
+<h1>Shepp-Logan phantom<a class="headerlink" href="#shepp-logan-phantom" title="Link to this heading">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">includeFile</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">txt</span> <span class="n">materials</span><span class="o">.</span><span class="n">txt</span> <span class="n">source</span><span class="o">.</span><span class="n">txt</span> <span class="n">scorer</span><span class="o">.</span><span class="n">txt</span>
+
+<span class="c1">#================ Shepp-Logan phantom ================</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;World&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;G4_CALCIUM_OXIDE&quot;</span>
+<span class="n">u</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>    <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">6.9</span> <span class="n">cm</span>  <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">8.1</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">9.2</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;yellow&quot;</span>
+
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">EllipsBody</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">EllipsBody</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;Phantom&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">EllipsBody</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;G4_WATER&quot;</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">EllipsBody</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">6.624</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">EllipsBody</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">7.8</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span> 
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">EllipsBody</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">8.74</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span> 
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">EllipsBody</span><span class="o">/</span><span class="n">TransZ</span>   <span class="o">=</span> <span class="mf">0.184</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span> 
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">EllipsBody</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;green&quot;</span>
+
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;EllipsBody&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;Air&quot;</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">1.10</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">2.2</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">3.1</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">TransX</span>   <span class="o">=</span> <span class="mf">2.2</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">RotY</span>     <span class="o">=</span> <span class="mi">18</span> <span class="n">deg</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">RotX</span>     <span class="o">=</span> <span class="mi">10</span> <span class="n">deg</span>
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips1</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;EllipsBody&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;Air&quot;</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">1.60</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">2.8</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">4.1</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">TransX</span>   <span class="o">=</span> <span class="o">-</span><span class="mf">2.5</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">RotY</span>     <span class="o">=</span> <span class="o">-</span><span class="mi">18</span> <span class="n">deg</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">RotX</span>     <span class="o">=</span> <span class="mi">10</span> <span class="n">deg</span>
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips2</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips3</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips3</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;EllipsBody&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Ellips3</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;G4_TEFLON&quot;</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips3</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">2.1</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips3</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">4.1</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips3</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">2.5</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips3</span><span class="o">/</span><span class="n">TransZ</span>   <span class="o">=</span>  <span class="o">-</span><span class="mf">3.5</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips3</span><span class="o">/</span><span class="n">TransY</span>   <span class="o">=</span>  <span class="o">-</span><span class="mf">1.5</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips3</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;green&quot;</span>
+
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips4</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips4</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;EllipsBody&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Ellips4</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;G4_TEFLON&quot;</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips4</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">0.46</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips4</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">0.5</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips4</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">0.46</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips4</span><span class="o">/</span><span class="n">TransZ</span>   <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips4</span><span class="o">/</span><span class="n">TransY</span>   <span class="o">=</span>  <span class="mf">2.5</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips4</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips5</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips5</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;EllipsBody&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Ellips5</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;G4_TEFLON&quot;</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips5</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">0.46</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips5</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">0.5</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips5</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">0.46</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips5</span><span class="o">/</span><span class="n">TransZ</span>   <span class="o">=</span> <span class="mf">1.0</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips5</span><span class="o">/</span><span class="n">TransY</span>   <span class="o">=</span> <span class="mf">2.5</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips5</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips6</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips6</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;EllipsBody&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Ellips6</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;G4_TEFLON&quot;</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips6</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">0.46</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips6</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">0.5</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips6</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">0.23</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips6</span><span class="o">/</span><span class="n">TransX</span>   <span class="o">=</span> <span class="o">-</span><span class="mf">0.8</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips6</span><span class="o">/</span><span class="n">TransZ</span>   <span class="o">=</span> <span class="mf">6.05</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips6</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips7</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips7</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;EllipsBody&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Ellips7</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;G4_TEFLON&quot;</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips7</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">0.23</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips7</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">0.2</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips7</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">0.23</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips7</span><span class="o">/</span><span class="n">TransZ</span>   <span class="o">=</span> <span class="mf">6.06</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips7</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips8</span><span class="o">/</span><span class="n">Type</span>     <span class="o">=</span> <span class="s2">&quot;G4Ellipsoid&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips8</span><span class="o">/</span><span class="n">Parent</span>   <span class="o">=</span> <span class="s2">&quot;EllipsBody&quot;</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Ellips8</span><span class="o">/</span><span class="n">Material</span> <span class="o">=</span> <span class="s2">&quot;G4_TEFLON&quot;</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips8</span><span class="o">/</span><span class="n">HLX</span>      <span class="o">=</span> <span class="mf">0.23</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips8</span><span class="o">/</span><span class="n">HLY</span>      <span class="o">=</span> <span class="mf">0.2</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips8</span><span class="o">/</span><span class="n">HLZ</span>      <span class="o">=</span> <span class="mf">0.46</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips8</span><span class="o">/</span><span class="n">TransX</span>   <span class="o">=</span> <span class="mf">0.6</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">d</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips8</span><span class="o">/</span><span class="n">TransZ</span>   <span class="o">=</span> <span class="mf">6.05</span> <span class="n">cm</span> <span class="o">*</span> <span class="n">Ge</span><span class="o">/</span><span class="n">Phantom</span><span class="o">/</span><span class="n">Scale</span>
+<span class="n">sc</span><span class="p">:</span><span class="n">GE</span><span class="o">/</span><span class="n">Ellips8</span><span class="o">/</span><span class="n">color</span>   <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">TOPAS-imaging</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../detectors/index.html">Detector geometries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scorers/index.html">Scorers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Examples</a><ul>
+  <li><a href="index.html">CBCT</a><ul>
+      <li>Previous: <a href="detector.html" title="previous chapter">Detector.txt</a></li>
+      <li>Next: <a href="contrast_phantom.html" title="next chapter">Contrast phantom</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Hoyeon Lee.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../../_sources/examples/CBCT/shepp_logan_phantom.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

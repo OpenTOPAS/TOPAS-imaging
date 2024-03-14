@@ -1,0 +1,86 @@
+# Generated from CLion C/C++ Code Style settings
+BasedOnStyle: LLVM
+AccessModifierOffset: -4
+AlignOperands: Align
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: true
+BraceWrapping:
+  AfterClass: false
+  BeforeElse: false
+  SplitEmptyFunction: false
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+BreakInheritanceList: BeforeColon
+CompactNamespaces: false
+IndentPPDirectives: None
+KeepEmptyLinesAtTheStartOfBlocks: true
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: true
+ReflowComments: false
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+UseCRLF: false
+---
+Language: Cpp
+# Force pointers to the type for C++.
+DerivePointerAlignment: false
+SpacesBeforeTrailingComments: 3
+Cpp11BracedListStyle: false
+PointerAlignment: Left
+AlignAfterOpenBracket: DontAlign #Align #AlwaysBreak
+BinPackArguments: false
+BinPackParameters: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AlwaysBreakTemplateDeclarations: Yes
+AlwaysBreakAfterReturnType: None
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterControlStatement: Never
+  AfterCaseLabel: false
+  AfterClass: true
+  AfterFunction: false
+  AfterEnum: false
+  AfterNamespace: true
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: true
+  BeforeCatch: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 120
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ContinuationIndentWidth: 4
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
+AllowShortEnumsOnASingleLine: false
+IndentCaseLabels: false
+---
+

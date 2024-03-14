@@ -1,0 +1,13 @@
+.DS_Store
+scoring/example_sinogram/*
+assets/*.header
+assets/*.phsp
+assets/*.geom
+assets/components/cbct/*.binheader
+assets/components/cbct/*.bin
+assets/components/pet/*.header
+assets/components/pet/*.phsp
+assets/components/cbct/OSF/*
+assets/components/cbct/OSF_no_carbon_v2/*
+assets/components/cbct/opticalphoton/*
+assets/components/cbct/pcd_test/*

@@ -1,0 +1,4 @@
+PET system
+=========================================
+
+.. literalinclude:: /example_parameters/PET.txt

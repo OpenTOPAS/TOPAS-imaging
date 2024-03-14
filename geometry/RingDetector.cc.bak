@@ -1,0 +1,1141 @@
+// Component for RingDetector
+
+// Copyright 2020 Joseph Feld (feldj@mit.edu) and Gabriel Cojocaru (r_eality@mit.edu)
+// All rights reserved.
+// Use of this source code is governed by a MIT-style license that can
+// be found in the LICENSE file.
+
+#include "RingDetector.hh"
+
+#include "TsParameterManager.hh"
+
+#include "G4Box.hh"
+#include "G4LogicalVolume.hh"
+#include "G4Material.hh"
+#include "G4RotationMatrix.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4ThreeVector.hh"
+#include "G4VPhysicalVolume.hh"
+#include "G4VisAttributes.hh"
+#include "G4Visible.hh"
+
+#include <cassert>
+#include <cmath>
+#include <cstring>
+#include <fstream>
+#include <sstream>
+
+#include <G4AffineTransform.hh>
+
+const G4double eps = 1e-9;
+
+#define dbg(x) G4cerr << #x << " = " << x << G4endl
+
+RingDetector::RingDetector(TsParameterManager* pM, TsExtensionManager* eM, TsMaterialManager* mM,
+    TsGeometryManager* gM, TsVGeometryComponent* parentComponent, G4VPhysicalVolume* parentVolume,
+    G4String& name) :
+    TsVGeometryComponent(pM, eM, mM, gM, parentComponent, parentVolume, name) {
+    ;
+}
+
+RingDetector::~RingDetector() {
+    ;
+}
+
+void RingDetector::GetNbOfModulesX(void) {
+    NbOfModulesX =
+        fDetectorType == "PET" ? fPm->GetIntegerParameter(GetFullParmName("NbOfModulesX")) : 1;
+}
+void RingDetector::GetNbOfModulesY(void) {
+    NbOfModulesY =
+        fDetectorType == "PET" ? fPm->GetIntegerParameter(GetFullParmName("NbOfModulesY")) : 1;
+    if (NbOfModulesY > 1) {
+        G4cerr << "Error: We only support NbOfModulesY == 1, see: "
+               << GetFullParmName("NbOfModulesY") << G4endl;
+        exit(-1);
+    }
+}
+void RingDetector::GetNbOfModulesZ(void) {
+    NbOfModulesZ =
+        fDetectorType == "PET" ? fPm->GetIntegerParameter(GetFullParmName("NbOfModulesZ")) : 1;
+}
+
+void RingDetector::GetNbOfSubmodulesX(void) {
+    NbOfSubmodulesX =
+        fDetectorType == "PET" ? fPm->GetIntegerParameter(GetFullParmName("NbOfSubmodulesX")) : 1;
+}
+void RingDetector::GetNbOfSubmodulesY(void) {
+    NbOfSubmodulesY =
+        fDetectorType == "PET" ? fPm->GetIntegerParameter(GetFullParmName("NbOfSubmodulesY")) : 1;
+    if (NbOfSubmodulesY > 1) {
+        G4cerr << "Error: We only support NbOfSubmodulesY == 1, see: "
+               << GetFullParmName("NbOfSubmodulesY") << G4endl;
+        exit(-1);
+    }
+}
+void RingDetector::GetNbOfSubmodulesZ(void) {
+    NbOfSubmodulesZ =
+        fDetectorType == "PET" ? fPm->GetIntegerParameter(GetFullParmName("NbOfSubmodulesZ")) : 1;
+}
+// void RingDetector::GetNbOfRings(void)
+// {
+//   NbOfRings = fDetectorType == "PET"
+//                   ? fPm->GetIntegerParameter(GetFullParmName("NbOfRings"))
+//                   : 1;
+// }
+
+void RingDetector::GetNbOfXBins(void) {
+    NbOfXBins = fPm->GetIntegerParameter(GetFullParmName("NbOfXBins"));
+    if (NbOfXBins <= 0) {
+        G4cout << "Error: NbOfXBins should be a positive integer, see: "
+               << GetFullParmName("NbOfXBins") << G4endl;
+        exit(1);
+    }
+}
+void RingDetector::GetNbOfYBins(void) {
+    NbOfYBins = fPm->GetIntegerParameter(GetFullParmName("NbOfYBins"));
+    if (NbOfYBins <= 0) {
+        G4cout << "Error: NbOfYBins should be a positive integer, see: "
+               << GetFullParmName("NbOfYBins") << G4endl;
+        exit(1);
+    }
+}
+
+void RingDetector::GetNbOfZBins(void) {
+    NbOfZBins = fPm->GetIntegerParameter(GetFullParmName("NbOfZBins"));
+    if (NbOfZBins <= 0) {
+        G4cout << "Error: NbOfZBins should be a positive integer, see: "
+               << GetFullParmName("NbOfZBins") << G4endl;
+        exit(1);
+    }
+}
+
+void RingDetector::GetNbOfDetectors(void) {
+    NbOfDetectors = fPm->GetIntegerParameter(GetFullParmName("NbOfDetectors"));
+
+    if (NbOfDetectors < 0) {
+        NbOfDetectors = floor(M_PI / asin(fHLX / fRingRadius));
+        G4cout << "Infered that NbOfDetectors = " << NbOfDetectors << G4endl;
+    }
+
+    if (NbOfDetectors == 0) {
+        G4cout << "Error: NbOfDetectors should not be equal to 0 either "
+                  "implicitly or explicitely, see: "
+               << GetFullParmName("NbOfDetectors") << G4endl;
+        exit(1);
+    }
+}
+
+G4double RingDetector::GetCollimatorOpeningHLX(void) {
+    assert(CollimatorExists());
+    // return (1 - fPm->IGetUnitlessParameter(
+    //                 GetFullParmName("ThicknessAxisXPercentage"))) *
+    //        fHLX / NbOfXBins;
+
+    return (1 - fPm->IGetUnitlessParameter(GetFullParmName("ThicknessAxisXPercentage"))) *
+           fCrystalHLX;
+}
+
+G4double RingDetector::GetCollimatorOpeningHLZ(void) {
+    assert(CollimatorExists());
+    return (1 - fPm->IGetUnitlessParameter(GetFullParmName("ThicknessAxisZPercentage"))) *
+           fCrystalHLZ;
+}
+
+void RingDetector::GetModuleGapHLX(void) {
+    if (NbOfModulesX == 1) {
+        if (std::abs(fModuleHLX - fHLX) > eps) {
+            G4cout << "Error: if the number of NbOfModulesX is 1 then ModuleHLX should be equal "
+                      "to HLX, see: "
+                   << GetFullParmName("ModuleHLX") << " and " << GetFullParmName("HLX") << G4endl;
+            exit(1);
+        }
+        // return 0;
+        fModuleGapX = 0;
+    } else {
+        if (fModuleHLX * NbOfModulesX > fHLX) {
+            G4cout << "Error: ModuleHLX * NbOfModulesX should be smaller than HLX, see: "
+                   << GetFullParmName("NbOfModulesX") << ", " << GetFullParmName("ModuleHLX")
+                   << " and " << GetFullParmName("HLX") << G4endl;
+            exit(1);
+        }
+        fModuleGapX = 2 * (fHLX - NbOfModulesX * fModuleHLX) / (NbOfModulesX - 1);
+        // return fGapX;
+    }
+}
+
+void RingDetector::GetModuleGapHLY(void) {
+    if (NbOfModulesY == 1) {
+        // if (std::abs(fModuleHLY - fHLY) > eps)
+        // {
+        //   G4cout << "Error: if the number of NbOfModulesY is 1 then ModuleHLY should be equal "
+        //             "to HLY, see: "
+        //         << GetFullParmName("ModuleHLY") << " and "
+        //         << GetFullParmName("HLY") << G4endl;
+        //   exit(1);
+        // }
+        // return 0;
+        fModuleGapY = 0;
+    } else {
+        if (fModuleHLY * NbOfModulesY > fHLY) {
+            G4cout << "Error: ModuleHLY * NbOfModulesY should be smaller than HLY, see: "
+                   << GetFullParmName("NbOfModulesY") << ", " << GetFullParmName("ModuleHLY")
+                   << " and " << GetFullParmName("HLY") << G4endl;
+            exit(1);
+        }
+        fModuleGapY = 2 * (fHLY - NbOfModulesY * fModuleHLY) / (NbOfModulesY - 1);
+        // return fGapX;
+    }
+}
+void RingDetector::GetModuleGapHLZ(void) {
+    if (NbOfModulesZ == 1) {
+        if (std::abs(fModuleHLZ - fHLZ) > eps) {
+            G4cout << "Error: if the number of NbOfModulesZ is 1 then ModuleHLZ should be equal "
+                      "to HLZ, see: "
+                   << GetFullParmName("ModuleHLZ") << " and " << GetFullParmName("HLZ") << G4endl;
+            exit(1);
+        }
+        // return 0;
+        fModuleGapZ = 0;
+    } else {
+        if (fModuleHLZ * NbOfModulesZ > fHLZ) {
+            G4cout << "Error: ModuleHLZ * NbOfModulesZ should be smaller than HLZ, see: "
+                   << GetFullParmName("NbOfModulesZ") << ", " << GetFullParmName("ModuleHLZ")
+                   << " and " << GetFullParmName("HLZ") << G4endl;
+            exit(1);
+        }
+
+        fModuleGapZ = 2 * (fHLZ - NbOfModulesZ * fModuleHLZ) / (NbOfModulesZ - 1);
+        G4cout << "Module Gap Z: " << fModuleGapZ << G4endl;
+        // return fGapZ;
+    }
+}
+
+void RingDetector::GetSubmoduleGapHLX(void) {
+    if (NbOfSubmodulesX == 1) {
+        if (std::abs(fSubmoduleHLX - fModuleHLX) > eps) {
+            G4cout
+                << "Error: if the number of NbOfSubmodulesX is 1 then SubmoduleHLX should be equal "
+                   "to ModuleHLX, see: "
+                << GetFullParmName("SubmoduleHLX") << " and " << GetFullParmName("ModuleHLX")
+                << G4endl;
+            exit(1);
+        }
+        // return 0;
+        fSubmoduleGapX = 0;
+    } else {
+        if (fSubmoduleHLX * NbOfSubmodulesX > fModuleHLX) {
+            G4cout
+                << "Error: SubmoduleHLX * NbOfSubmodulesX should be smaller than ModuleHLX, see: "
+                << GetFullParmName("NbOfSubmodulesX") << ", " << GetFullParmName("SubmoduleHLX")
+                << " and " << GetFullParmName("ModuleHLX") << G4endl;
+            exit(1);
+        }
+        fSubmoduleGapX = 2 * (fModuleHLX - NbOfSubmodulesX * fSubmoduleHLX) / (NbOfSubmodulesX - 1);
+        // return fGapX;
+    }
+}
+
+void RingDetector::GetSubmoduleGapHLY(void) {
+    if (NbOfSubmodulesY == 1) {
+        // if (std::abs(fSubmoduleHLY - fModuleHLY) > eps)
+        // {
+        //   G4cout << "Error: if the number of NbOfSubmodulesY is 1 then SubmoduleHLY should be equal "
+        //             "to ModuleHLY, see: "
+        //          << GetFullParmName("SubmoduleHLY") << " and "
+        //          << GetFullParmName("ModuleHLY") << G4endl;
+        //   exit(1);
+        // }
+        // return 0;
+        fSubmoduleGapY = 0;
+    } else {
+        if (fSubmoduleHLY * NbOfSubmodulesY > fModuleHLY) {
+            G4cout
+                << "Error: SubmoduleHLY * NbOfSubmodulesY should be smaller than ModuleHLY, see: "
+                << GetFullParmName("NbOfSubmodulesY") << ", " << GetFullParmName("SubmoduleHLY")
+                << " and " << GetFullParmName("ModuleHLY") << G4endl;
+            exit(1);
+        }
+        fSubmoduleGapY = 2 * (fModuleHLY - NbOfSubmodulesY * fSubmoduleHLY) / (NbOfSubmodulesY - 1);
+        // return fGapX;
+    }
+}
+void RingDetector::GetSubmoduleGapHLZ(void) {
+    if (NbOfSubmodulesZ == 1) {
+        if (std::abs(fSubmoduleHLZ - fModuleHLZ) > eps) {
+            G4cout
+                << "Error: if the number of NbOfSubmodulesZ is 1 then SubmoduleHLZ should be equal "
+                   "to ModuleHLZ, see: "
+                << GetFullParmName("SubmoduleHLZ") << " and " << GetFullParmName("ModuleHLZ")
+                << G4endl;
+            exit(1);
+        }
+        // return 0;
+        fSubmoduleGapZ = 0;
+    } else {
+        if (fSubmoduleHLZ * NbOfSubmodulesZ > fModuleHLZ) {
+            G4cout
+                << "Error: SubmoduleHLZ * NbOfSubmodulesZ should be smaller than ModuleHLZ, see: "
+                << GetFullParmName("NbOfSubmodulesZ") << ", " << GetFullParmName("SubmoduleHLZ")
+                << " and " << GetFullParmName("ModuleHLZ") << G4endl;
+            exit(1);
+        }
+        fSubmoduleGapZ = 2 * (fModuleHLZ - NbOfSubmodulesZ * fSubmoduleHLZ) / (NbOfSubmodulesZ - 1);
+        // return fGapZ;
+    }
+}
+
+void RingDetector::GetCrystalGapHLX(void) {
+    if (NbOfXBins == 1) {
+        if (std::abs(fSubmoduleHLX - fCrystalHLX) > eps) {
+            G4cout << "Error: if the number of XBins is 1 then CrystalHLX should be equal "
+                      "to SubmoduleHLX, see: "
+                   << GetFullParmName("CrystalHLX") << " and " << GetFullParmName("SubmoduleHLX")
+                   << G4endl;
+            exit(1);
+        }
+        // return 0;
+        fCrystalGapX = 0;
+    } else {
+        if (fCrystalHLX * NbOfXBins > fSubmoduleHLX) {
+            G4cout << "Error: CrystalHLX * NbOfXBins should be smaller than SubmoduleHLX, see: "
+                   << GetFullParmName("NbOfXBins") << ", " << GetFullParmName("CrystalHLX")
+                   << " and " << GetFullParmName("SubmoduleHLX") << G4endl;
+            exit(1);
+        }
+        fCrystalGapX = 2 * (fSubmoduleHLX - NbOfXBins * fCrystalHLX) / (NbOfXBins - 1);
+        printf("crystal gap x %f\n", fCrystalGapX);
+        // return fGapX;
+    }
+}
+
+void RingDetector::GetCrystalGapHLY(void) {
+    if (NbOfYBins == 1) {
+        if (std::abs(fSubmoduleHLY - fCrystalHLY) > eps) {
+            G4cout << "Error: if the number of YBins is 1 then CrystalHLY should be equal "
+                      "to SubmoduleHLY, see: "
+                   << GetFullParmName("CrystalHLY") << " and " << GetFullParmName("SubmoduleHLY")
+                   << G4endl;
+            exit(1);
+        }
+        // return 0;
+        fCrystalGapY = 0;
+    } else {
+        if (fCrystalHLY * NbOfYBins > fSubmoduleHLY) {
+            G4cout << "Error: CrystalHLY * NbOfYBins should be smaller than SubmoduleHLY, see: "
+                   << GetFullParmName("NbOfYBins") << ", " << GetFullParmName("CrystalHLY")
+                   << " and " << GetFullParmName("SubmoduleHLY") << G4endl;
+            exit(1);
+        }
+        fCrystalGapY = 2 * (fSubmoduleHLY - NbOfYBins * fCrystalHLY) / (NbOfYBins - 1);
+        // return fGapX;
+    }
+}
+void RingDetector::GetCrystalGapHLZ(void) {
+    if (NbOfZBins == 1) {
+        if (std::abs(fSubmoduleHLZ - fCrystalHLZ) > eps) {
+            G4cout << "Error: if the number of ZBins is 1 then CrystalHLZ should be equal "
+                      "to SubmoduleHLZ, see: "
+                   << GetFullParmName("CrystalHLZ") << " and " << GetFullParmName("SubmoduleHLZ")
+                   << G4endl;
+            exit(1);
+        }
+        // return 0;
+        fCrystalGapZ = 0;
+    } else {
+        if (fCrystalHLZ * NbOfZBins > fSubmoduleHLZ) {
+            G4cout << "Error: CrystalHLZ * NbOfZBins should be smaller than SubmoduleHLZ, see: "
+                   << GetFullParmName("NbOfZBins") << ", " << GetFullParmName("CrystalHLZ")
+                   << " and " << GetFullParmName("SubmoduleHLZ") << G4endl;
+            exit(1);
+        }
+        fCrystalGapZ = 2 * (fSubmoduleHLZ - NbOfZBins * fCrystalHLZ) / (NbOfZBins - 1);
+        // return fGapZ;
+    }
+}
+
+void RingDetector::GetMarginRings(void) {
+    fMarginRings = 0;
+    if (fDetectorType == "PET" && fPm->ParameterExists(GetFullParmName("MarginRings"))) {
+        fMarginRings = fPm->GetDoubleParameter(GetFullParmName("MarginRings"), "Length");
+    }
+}
+
+void RingDetector::GetCrystalCoordinateSave(void) {
+    fSaveCrystalCoordinate = fPm->GetBooleanParameter(GetFullParmName("SaveCrystalCoordinate"));
+    if (fSaveCrystalCoordinate) {
+        fCrystalCoordinateFilename =
+            fPm->GetStringParameter(GetFullParmName("CrystalCoordinateFilename"));
+    } else {
+        G4cout << "SaveCrystalCoordinate not set" << G4endl;
+        fCrystalCoordinateFilename = "";
+    }
+}
+
+void RingDetector::GetRingRadius(void) {
+    fRingRadius = fPm->GetDoubleParameter(GetFullParmName("RingRadius"), "Length");
+}
+
+void RingDetector::GetHLX(void) {
+    fHLX = fPm->GetDoubleParameter(GetFullParmName("HLX"), "Length");
+}
+void RingDetector::GetHLY(void) {
+    fHLY = fPm->GetDoubleParameter(GetFullParmName("HLY"), "Length");
+}
+void RingDetector::GetHLZ(void) {
+    fHLZ = fPm->GetDoubleParameter(GetFullParmName("HLZ"), "Length");
+}
+void RingDetector::GetModuleHLX(void) {
+    fModuleHLX = fPm->GetDoubleParameter(GetFullParmName("ModuleHLX"), "Length");
+}
+void RingDetector::GetModuleHLY(void) {
+    fModuleHLY = fPm->GetDoubleParameter(GetFullParmName("ModuleHLY"), "Length");
+}
+void RingDetector::GetModuleHLZ(void) {
+    fModuleHLZ = fPm->GetDoubleParameter(GetFullParmName("ModuleHLZ"), "Length");
+}
+
+void RingDetector::GetSubmoduleHLX(void) {
+    fSubmoduleHLX = fPm->GetDoubleParameter(GetFullParmName("SubmoduleHLX"), "Length");
+}
+void RingDetector::GetSubmoduleHLY(void) {
+    fSubmoduleHLY = fPm->GetDoubleParameter(GetFullParmName("SubmoduleHLY"), "Length");
+}
+void RingDetector::GetSubmoduleHLZ(void) {
+    fSubmoduleHLZ = fPm->GetDoubleParameter(GetFullParmName("SubmoduleHLZ"), "Length");
+}
+
+void RingDetector::GetCrystalHLX(void) {
+    fCrystalHLX = fPm->GetDoubleParameter(GetFullParmName("CrystalHLX"), "Length");
+}
+void RingDetector::GetCrystalHLY(void) {
+    fCrystalHLY = fPm->GetDoubleParameter(GetFullParmName("CrystalHLY"), "Length");
+}
+
+void RingDetector::GetCrystalHLZ(void) {
+    fCrystalHLZ = fPm->GetDoubleParameter(GetFullParmName("CrystalHLZ"), "Length");
+}
+
+void RingDetector::GetCollimatorHLY(void) {
+    fCollimatorHLY = CollimatorExists()
+                         ? fPm->GetDoubleParameter(GetFullParmName("CollimatorHLY"), "Length")
+                         : 0;
+}
+
+void RingDetector::GetCollimatorOpeningMaterial(void) {
+    fCollimatorOpeningMaterial = fParentComponent->GetResolvedMaterialName();
+}
+
+void RingDetector::GetCollimatorMaterial(void) {
+    // If collimator does not exist the we put a whatever material we want since
+    // we're not going to use the collimator
+    fCollimatorMaterial =
+        CollimatorExists() ? fPm->GetStringParameter(GetFullParmName("CollimatorMaterial")) : "";
+}
+
+void RingDetector::GetDetectorType(void) {
+    fDetectorType = fPm->GetStringParameter(GetFullParmName("DetectorType"));
+}
+
+void RingDetector::GetCrystalMaterial(void) {
+    fCrystalMaterial = fPm->GetStringParameter(GetFullParmName("CrystalMaterial"));
+}
+
+void RingDetector::GetTubeMaterial(void) {
+    fTubeMaterial = fPm->GetStringParameter(GetFullParmName("Material"));
+}
+
+// The angle of the detector depends on the DetectorType
+G4double RingDetector::GetAngle(int detectorID) {
+    if (fDetectorType == "PET") {
+        // return M_PI / 2 + 2 * M_PI * detectorID / NbOfDetectors;
+        return -M_PI / 2 + 2 * M_PI * detectorID / NbOfDetectors;
+    }
+    return 2 * M_PI * detectorID / NbOfDetectors;
+}
+
+// CrystalCounter *RingDetector::GetCrystalCounter(void)
+PETCrystalCounter* RingDetector::GetCrystalCounter(void) {
+    assert(fDetectorType == "PET" || fDetectorType == "SPECT" || fDetectorType == "PG");
+    if (fDetectorType == "PET") {
+        // return new PETCrystalCounter(NbOfDetectors, NbOfZBins, NbOfXBins);
+        return new PETCrystalCounter(NbOfDetectors,
+            NbOfModulesX,
+            NbOfModulesY,
+            NbOfModulesZ,
+            NbOfSubmodulesX,
+            NbOfSubmodulesY,
+            NbOfSubmodulesZ,
+            NbOfXBins,
+            NbOfYBins,
+            NbOfZBins);
+    }
+    return new PETCrystalCounter(NbOfDetectors,
+        NbOfModulesX,
+        NbOfModulesY,
+        NbOfModulesZ,
+        NbOfSubmodulesX,
+        NbOfSubmodulesY,
+        NbOfSubmodulesZ,
+        NbOfXBins,
+        NbOfYBins,
+        NbOfZBins);
+    // return new SPECTCrystalCounter(NbOfDetectors, NbOfZBins, NbOfXBins);
+}
+
+void RingDetector::GetCastorScannerName(void) {
+    fScannerName = fPm->ParameterExists(GetFullParmName("CastorName"))
+                       ? fPm->GetStringParameter(GetFullParmName("CastorName"))
+                       : ("topas_scanner_" + fDetectorType);
+}
+
+void RingDetector::GetCastorGeomPath(void) {
+    GetCastorScannerName();
+    fGeomPath = (fPm->ParameterExists(GetFullParmName("CastorGeomDirectory"))
+                        ? fPm->GetStringParameter(GetFullParmName("CastorGeomDirectory"))
+                        : "") +
+                fScannerName + ".geom";
+}
+
+void RingDetector::GetCastorDescription(void) {
+    fDescription = fPm->ParameterExists(GetFullParmName("CastorDescription"))
+                       ? fPm->GetStringParameter(GetFullParmName("CastorDescription"))
+                       : "Custom scanner geometry simulated in TOPAS";
+}
+
+void RingDetector::GetCastorMinAngleDifference(void) {
+    fMinAngleDifference =
+        fPm->ParameterExists(GetFullParmName("CastorMinAngleDifference"))
+            ? fPm->GetDoubleParameter(GetFullParmName("CastorMinAngleDifference"), "Angle")
+            : 0 * deg;
+}
+
+void RingDetector::GetCastorMeanDepthOfInteraction(void) {
+    fMeanDepthOfInteraction =
+        fPm->ParameterExists(GetFullParmName("CastorMeanDepthOfInteraction"))
+            ? fPm->GetDoubleParameter(GetFullParmName("CastorMeanDepthOfInteraction"), "Length")
+            : -mm;
+}
+
+void RingDetector::GetCastorOutputSize(void) {
+    fVoxelsTransaxial = fPm->ParameterExists(GetFullParmName("CastorOutputSize"))
+                            ? fPm->GetIntegerParameter(GetFullParmName("CastorOutputSize"))
+                            : 256;
+}
+
+void RingDetector::GetCastorOutputDepth(void) {
+    fVoxelsAxial = fPm->ParameterExists(GetFullParmName("CastorOutputDepth"))
+                       ? fPm->GetIntegerParameter(GetFullParmName("CastorOutputDepth"))
+                       : NbOfZBins * NbOfModulesZ;
+}
+
+void RingDetector::GetCastorFOVSize(void) {
+    fFOVTransaxial = fPm->ParameterExists(GetFullParmName("CastorFOVSize"))
+                         ? fPm->GetDoubleParameter(GetFullParmName("CastorFOVSize"), "Length")
+                         : 2 * (fRingRadius + 2 * fCrystalHLY);
+}
+
+void RingDetector::GetCastorFOVDepth(void) {
+    fFOVAxial = fPm->ParameterExists(GetFullParmName("CastorFOVDepth"))
+                    ? fPm->GetDoubleParameter(GetFullParmName("CastorFOVDepth"), "Length")
+                    : (NbOfModulesZ - 1) * fMarginRings + NbOfModulesZ * 2 * fHLZ;
+}
+
+G4String RingDetector::WriteCopies(G4double value, G4int numCopies) {
+    return WriteCopies(std::to_string(value), numCopies);
+}
+
+G4String RingDetector::WriteCopies(G4int value, G4int numCopies) {
+    return WriteCopies(std::to_string(value), numCopies);
+}
+
+G4String RingDetector::WriteCopies(G4String value, G4int numCopies) {
+    G4String output = "";
+    output += value;
+    for (int i = 0; i < numCopies - 1; i++) {
+        output += ", " + value;
+    }
+    return output;
+}
+
+void RingDetector::CreateCastorHeader(void) {
+    static const char* header_opening =
+        "# comments\n"
+        "#       Y                                        _________  \n"
+        "#       |                                       / _ \\     \\ \n"
+        "#       |                                      | / \\ |     |\n"
+        "#       |_____ Z                               | | | |     |\n"
+        "#        \\                                     | | | |     |\n"
+        "#         \\                                    | \\_/ |     |\n"
+        "#          X                                    \\___/_____/\n"
+        "# Left-handed axis orientation\n"
+        "# scanner axis is z\n"
+        "# positions in millimeters\n"
+        "# Use comma without space as separator in the tables.\n\n";
+
+    // This function also calls GetScannerName()
+    GetCastorGeomPath();
+    GetCastorOutputSize();
+    GetCastorDescription();
+    GetCastorOutputDepth();
+    GetCastorFOVSize();
+    GetCastorFOVDepth();
+    G4cerr << "Writing to: " << fGeomPath << G4endl;
+    std::ofstream header(fGeomPath);
+
+    if (!header) {
+        G4cout << "Could not open the header file!" << G4endl;
+        exit(1);
+    }
+    header << header_opening << std::endl;
+
+    // Make CASToR .geom file
+
+    if (fDetectorType == "SPECT" || fDetectorType == "PG") {
+        header << "modality: SPECT_CONVERGENT" << std::endl;
+        header << "scanner name: " << fScannerName << std::endl;
+        header << "description: " << fDescription << std::endl;
+        header << "number of detector heads: " << 1 << std::endl;
+        header << std::endl;
+        header << "trans number of pixels: " << NbOfXBins << std::endl;
+        header << "trans pixel size: " << 2 * fCrystalHLX / mm << std::endl;
+        header << "trans gap size: " << 2 * fCrystalGapX / mm << std::endl;
+        header << std::endl;
+        header << "axial number of pixels: " << NbOfZBins << std::endl;
+        header << "axial pixel size: " << 2 * fCrystalHLZ / mm << std::endl;
+        header << "axial gap size: " << 2 * fCrystalGapZ / mm << std::endl;
+        header << std::endl;
+        header << "detector depth: " << 2 * fCrystalHLY / mm << std::endl;
+        header << "scanner radius: " << fRingRadius / mm << std::endl;
+        header << std::endl;
+        header << "head1:" << std::endl;
+        header << "trans focal model: constant #if parallel hole" << std::endl;
+        header << "trans number of coef model: " << 1 << std::endl;
+        header << "trans parameters: " << 0 << std::endl;
+        header << "axial focal model: constant" << std::endl;
+        header << "axial number of coef model: " << 1 << std::endl;
+        header << "axial parameters: " << 0 << std::endl;
+        header << std::endl;
+        header << "voxels number transaxial: " << fVoxelsTransaxial << std::endl;
+        header << "voxels number axial: " << fVoxelsAxial << std::endl;
+        header << "field of view transaxial: " << fFOVTransaxial / mm << std::endl;
+        header << "field of view axial: " << fFOVAxial / mm << std::endl;
+    } else if (fDetectorType == "PET") {
+        GetCastorMeanDepthOfInteraction();
+        GetCastorMinAngleDifference();
+
+        header << "modality: PET" << std::endl;
+        header << "scanner name: " << fScannerName << std::endl;
+        header << "number of elements: "
+               << NbOfXBins * NbOfModulesX * NbOfZBins * NbOfModulesZ * NbOfDetectors << std::endl;
+        header << "number of layers: " << 1 << std::endl;
+        header << std::endl;
+        header << "voxels number transaxial: " << fVoxelsTransaxial << std::endl;
+        header << "voxels number axial: " << fVoxelsAxial << std::endl;
+        header << "field of view transaxial: " << fFOVTransaxial / mm << std::endl;
+        header << "field of view axial: " << fFOVAxial / mm << std::endl;
+        header << std::endl;
+        header << "description: " << fDescription << std::endl;
+        header << "scanner radius: " << fRingRadius / mm << std::endl;
+        header << "number of rsectors: " << NbOfDetectors << std::endl;
+        header << "number of crystals transaxial: " << NbOfXBins << std::endl;
+        header << "number of crystals axial: " << NbOfZBins << std::endl;
+        header << std::endl;
+        header << "crystals size depth: " << 2 * fCrystalHLY / mm << std::endl;
+        header << "crystals size transaxial: " << 2 * fCrystalHLX / mm << std::endl;
+        header << "crystals size axial: " << 2 * fCrystalHLZ / mm << std::endl;
+        header << std::endl;
+        header << "rsectors first angle: " << 0 << std::endl;
+        header << "number of rsectors axial: " << 1 << std::endl;
+        header << "rsector gap transaxial: " << 0 << std::endl;
+        header << "rsector gap axial: " << 0 << std::endl;
+        header << "number of modules transaxial: " << NbOfModulesX << std::endl;
+        header << "number of modules axial: " << NbOfModulesZ << std::endl;
+        header << "module gap transaxial: " << 0 << std::endl;
+        header << "module gap axial: " << fMarginRings / mm << std::endl;
+        header << "number of submodules transaxial: " << 1 << std::endl;
+        header << "number of submodules axial: " << 1 << std::endl;
+        header << "submodule gap transaxial: " << 0 << std::endl;
+        header << "submodule gap axial: " << 0 << std::endl;
+        header << "crystal gap transaxial: " << 2 * fCrystalGapX / mm << std::endl;
+        header << "crystal gap axial: " << 2 * fCrystalGapZ / mm << std::endl;
+        header << "mean depth of interaction: " << fMeanDepthOfInteraction / mm << std::endl;
+        header << "rotation direction: "
+               << "CW" << std::endl;
+        header << "min angle difference: " << fMinAngleDifference / deg << std::endl;
+    }
+
+    header.close();
+}
+void RingDetector::ConstructDetector(void) {
+    G4double Angle, RotationAngle, DetectorTransX, DetectorTransY;
+    G4double CollimatorTransX, CollimatorTransY;
+    for (int DetectorIndex = 0; DetectorIndex < NbOfDetectors; DetectorIndex++) {
+        DetectorSolid = new G4Box("DtSd", fHLX, fHLY, fHLZ + fMarginRings * NbOfModulesZ);
+        DetectorLV    = CreateLogicalVolume("DtLV", fTubeMaterial, DetectorSolid);
+        CollimatorDetectorSolid =
+            fCollimatorExists ? new G4Box("CoDtSd", fHLX, fCollimatorHLY, fHLZ) : nullptr;
+        CollimatorDetectorLV =
+            fCollimatorExists
+                ? CreateLogicalVolume("CoDtLV", fCollimatorMaterial, CollimatorDetectorSolid)
+                : nullptr;
+        CollimatorDetectorPV = nullptr;
+        if (fCollimatorExists) {
+            ColorLV(G4Colour::Green(), CollimatorDetectorLV);
+        }
+        ColorLV(G4Colour::Magenta(), DetectorLV);
+        fCrystalCounter->SetDetectorID(DetectorIndex);
+        Angle         = -GetAngle(DetectorIndex);
+        RotationAngle = 0.5 * M_PI - Angle;
+        // RotationAngle= Angle;
+        G4RotationMatrix* RotMatrix = new G4RotationMatrix;
+        RotMatrix->rotateX(0);
+        RotMatrix->rotateY(0);
+        RotMatrix->rotateZ(RotationAngle);
+        DetectorTransX = std::cos(Angle) * (fRingRadius + 2 * fCollimatorHLY + fHLY);
+        DetectorTransY = std::sin(Angle) * (fRingRadius + 2 * fCollimatorHLY + fHLY);
+        G4ThreeVector* TransVectorDetector = new G4ThreeVector(DetectorTransX, DetectorTransY, 0);
+        G4cout << "Detector ID " << DetectorIndex << G4endl;
+        // DetectorPVs[DetectorIndex] = CreatePhysicalVolume("DtPV", DetectorIndex, true, DetectorLV, RotMatrix, TransVectorDetector, fEnvelopePhys);
+        G4VPhysicalVolume* DetectorPV = CreatePhysicalVolume(
+            "DtPV", DetectorIndex, true, DetectorLV, RotMatrix, TransVectorDetector, fEnvelopePhys);
+        // G4VPhysicalVolume *DetectorPV = CreatePhysicalVolume("DtPV", DetectorIndex, true, DetectorLV, RotMatrix, TransVectorDetector, fEnvelopePhys);
+
+        if (fCollimatorExists) {
+            CollimatorTransX = std::cos(Angle) * (fRingRadius + fCollimatorHLY);
+            CollimatorTransY = std::sin(Angle) * (fRingRadius + fCollimatorHLY);
+            G4ThreeVector* TransVectorCollimator =
+                new G4ThreeVector(CollimatorTransX, CollimatorTransY, 0);
+            CollimatorDetectorPV = CreatePhysicalVolume("CoBxPV",
+                DetectorIndex,
+                true,
+                CollimatorDetectorLV,
+                RotMatrix,
+                TransVectorCollimator,
+                fEnvelopePhys);
+        }
+        // ConstructModules(DetectorPV, CollimatorDetectorPV, ModuleLV, SubmoduleLV, CrystalLV, CollimatorOpeningLV);
+        ConstructModules(DetectorPV, CollimatorDetectorPV);
+    }
+    // return DetectorPVs;
+}
+
+void RingDetector::ConstructModules(
+    G4VPhysicalVolume* DetectorPV, G4VPhysicalVolume* CollimatorPV) {
+    // G4VSolid *ModuleSolid = new G4Box("MdSd", fModuleHLX, fModuleHLY, fModuleHLZ);
+    // G4LogicalVolume *ModuleLV = CreateLogicalVolume("MdLV", fTubeMaterial, ModuleSolid);
+    // ColorLV(G4Colour::Blue(), ModuleLV);
+    // G4int moduleCount = 0;
+    // ModuleSolid = new G4Box("MdSd", fModuleHLX, fModuleHLY, fModuleHLZ);
+    // ModuleLV = CreateLogicalVolume("MdLV", fTubeMaterial, ModuleSolid);
+    // ColorLV(G4Colour::Blue(), ModuleLV);
+
+    G4int    moduleID = 0;
+    G4double moduleTransX, moduleTransY, moduleTransZ;
+    for (int moduleIndexY = 0; moduleIndexY < NbOfModulesY; moduleIndexY++) {
+        moduleTransY = -((fModuleHLY * 2) * NbOfModulesY + fModuleGapY * (NbOfModulesY - 1)) * 0.5 +
+                       fModuleHLY + (fModuleHLY * 2 + fModuleGapY) * moduleIndexY;
+        // moduleTransY = -((fModuleHLY)*NbOfModulesY + fModuleGapY * 0.5 * (NbOfModulesY + 1)) * 1 + fModuleGapY + fModuleHLY + (fModuleHLY * 2 + fModuleGapY) * moduleIndexY;
+        assert(moduleTransY > -fHLY && moduleTransY < fHLY);
+
+        for (int moduleIndexZ = 0; moduleIndexZ < NbOfModulesZ; moduleIndexZ++) {
+            moduleTransZ =
+                -((fModuleHLZ * 2) * NbOfModulesZ + fModuleGapZ * (NbOfModulesZ - 1)) * 0.5 +
+                fModuleHLZ + (fModuleHLZ * 2 + fModuleGapZ) * moduleIndexZ;
+            // moduleTransZ = -((fModuleHLZ)*NbOfModulesZ + fModuleGapZ * 0.5 * (NbOfModulesZ + 1)) * 1 + fModuleGapZ + fModuleHLZ + (fModuleHLZ * 2 + fModuleGapZ) * moduleIndexZ;
+            // moduleTransZ = -(fModuleHLZ * 2 * NbOfModulesZ + fModuleGapZ * (NbOfModulesZ - 1)) * 0.5 + (fModuleHLZ * 2 + fModuleGapZ) * moduleIndexZ;
+            if (moduleIndexZ == 0) {
+                G4cout << "module poisition: " << moduleTransZ << G4endl;
+            }
+            G4cout << "HLZ: " << fHLZ << " moduleZ: " << moduleTransZ << G4endl;
+            assert(moduleTransZ >= -fHLZ && moduleTransZ <= fHLZ);
+
+            for (int moduleIndexX = 0; moduleIndexX < NbOfModulesX; moduleIndexX++) {
+                ModuleSolid = new G4Box("MdSd", fModuleHLX, fModuleHLY, fModuleHLZ);
+                ModuleLV    = CreateLogicalVolume("MdLV", fTubeMaterial, ModuleSolid);
+                ColorLV(G4Colour::Blue(), ModuleLV);
+                moduleID = fCrystalCounter->GetModuleID(moduleIndexX, moduleIndexY, moduleIndexZ);
+                // G4cout << "moduleID " << moduleID << G4endl;
+                moduleTransX =
+                    -((fModuleHLX * 2) * NbOfModulesX + fModuleGapX * (NbOfModulesX - 1)) * 0.5 +
+                    fModuleHLX + (fModuleHLX * 2 + fModuleGapX) * moduleIndexX;
+                // moduleTransX = -((fModuleHLX)*NbOfModulesX + fModuleGapX * 0.5 * (NbOfModulesX + 1)) * 1 + fModuleGapX + fModuleHLX + (fModuleHLX * 2 + fModuleGapX) * moduleIndexX;
+                assert(moduleTransX > -fHLX && moduleTransX < fHLX);
+
+                G4ThreeVector* TransVectorModule =
+                    new G4ThreeVector(moduleTransX, moduleTransY, moduleTransZ);
+                G4VPhysicalVolume* ModulePV = CreatePhysicalVolume(
+                    "MdPV", moduleID, true, ModuleLV, 0, TransVectorModule, DetectorPV);
+                // ModulePVs[moduleID] = CreatePhysicalVolume("MdPV", moduleID, true, ModuleLV, 0, TransVectorModule, DetectorPV);
+                // moduleCount++;
+                // ConstructSubmodules(ModulePV, CollimatorPV, TransVectorModule, SubmoduleLV, CrystalLV, CollimatorOpeningLV);
+                ConstructSubmodules(ModulePV, TransVectorModule, CollimatorPV);
+                // ConstructSubmodules(ModulePVs[moduleID], TransVectorModule, CollimatorPV);
+                assert(std::find(moduleIDs.begin(), moduleIDs.end(), moduleID) == moduleIDs.end());
+                moduleIDs.push_back(moduleID);
+            }
+        }
+    }
+    // for (int moduleInd = 0; moduleInd < moduleIDs.size(); moduleInd++)
+    // {
+    //   ConstructSubmodules(ModulePVs[moduleInd]);
+    // }
+}
+void RingDetector::ConstructSubmodules(G4VPhysicalVolume* ModulePV,
+    G4ThreeVector* TransVectorModule, G4VPhysicalVolume* CollimatorPV) {
+    // G4VSolid *SubmoduleSolid = new G4Box("SbMdSd", fSubmoduleHLX, fSubmoduleHLY, fSubmoduleHLZ);
+    // G4LogicalVolume *SubmoduleLV = CreateLogicalVolume("SbMdLV", fTubeMaterial, SubmoduleSolid);
+    // ColorLV(G4Colour::Yellow(), SubmoduleLV);
+    // G4int submoduleCount = 0;
+
+    // SubmoduleSolid = new G4Box("SbMdSd", fSubmoduleHLX, fSubmoduleHLY, fSubmoduleHLZ);
+    // SubmoduleLV = CreateLogicalVolume("SbMdLV", fTubeMaterial, SubmoduleSolid);
+    // ColorLV(G4Colour::Yellow(), SubmoduleLV);
+
+    G4int    submoduleID = -1;
+    G4double submoduleTransX, submoduleTransY, submoduleTransZ;
+    for (int submoduleIndexY = 0; submoduleIndexY < NbOfSubmodulesY; submoduleIndexY++) {
+        submoduleTransY =
+            -((fSubmoduleHLY * 2) * NbOfSubmodulesY + fSubmoduleGapY * (NbOfSubmodulesY - 1)) *
+                0.5 +
+            fSubmoduleHLY + (fSubmoduleHLY * 2 + fSubmoduleGapY) * submoduleIndexY;
+        // submoduleTransY = -((fSubmoduleHLY)*NbOfSubmodulesY + fSubmoduleGapY * 0.5 * (NbOfSubmodulesY + 1)) * 1 + fSubmoduleGapY + fSubmoduleHLY + (fSubmoduleHLY * 2 + fSubmoduleGapY) * submoduleIndexY;
+        assert(submoduleTransY > -fModuleHLY && submoduleTransY < fModuleHLY);
+        for (int submoduleIndexZ = 0; submoduleIndexZ < NbOfSubmodulesZ; submoduleIndexZ++) {
+            submoduleTransZ =
+                -((fSubmoduleHLZ * 2) * NbOfSubmodulesZ + fSubmoduleGapZ * (NbOfSubmodulesZ - 1)) *
+                    0.5 +
+                fSubmoduleHLZ + (fSubmoduleHLZ * 2 + fSubmoduleGapZ) * submoduleIndexZ;
+            // submoduleTransZ = -((fSubmoduleHLZ)*NbOfSubmodulesZ + fSubmoduleGapZ * 0.5 * (NbOfSubmodulesZ + 1)) * 1 + fSubmoduleGapZ + fSubmoduleHLZ + (fSubmoduleHLZ * 2 + fSubmoduleGapZ) * submoduleIndexZ;
+            assert(submoduleTransZ > -fModuleHLZ && submoduleTransZ < fModuleHLZ);
+            for (int submoduleIndexX = 0; submoduleIndexX < NbOfSubmodulesX; submoduleIndexX++) {
+                SubmoduleSolid = new G4Box("SbMdSd", fSubmoduleHLX, fSubmoduleHLY, fSubmoduleHLZ);
+                SubmoduleLV    = CreateLogicalVolume("SbMdLV", fTubeMaterial, SubmoduleSolid);
+                ColorLV(G4Colour::Yellow(), SubmoduleLV);
+                submoduleID = fCrystalCounter->GetSubmoduleID(
+                    submoduleIndexX, submoduleIndexY, submoduleIndexZ);
+                // assert(submoduleID == ModulePV->GetCopyNo());
+                submoduleTransX = -((fSubmoduleHLX * 2) * NbOfSubmodulesX +
+                                      NbOfSubmodulesX * (NbOfSubmodulesX - 1)) *
+                                      0.5 +
+                                  fSubmoduleHLX +
+                                  (fSubmoduleHLX * 2 + NbOfSubmodulesX) * submoduleIndexX;
+                // submoduleTransX = -((fSubmoduleHLX)*NbOfSubmodulesX + NbOfSubmodulesX * 0.5 * (NbOfSubmodulesX + 1)) * 1 + NbOfSubmodulesX + fSubmoduleHLX + (fSubmoduleHLX * 2 + NbOfSubmodulesX) * submoduleIndexX;
+                assert(submoduleTransX > -fModuleHLX && submoduleTransX < fModuleHLX);
+
+                G4ThreeVector* TransVectorSubmodule =
+                    new G4ThreeVector(submoduleTransX, submoduleTransY, submoduleTransZ);
+                G4VPhysicalVolume* SubmodulePV = CreatePhysicalVolume(
+                    "SbMdPV", submoduleID, true, SubmoduleLV, 0, TransVectorSubmodule, ModulePV);
+                // SubmodulePVs[submoduleID] = CreatePhysicalVolume("SbMdPV", submoduleID, true, SubmoduleLV, 0, TransVectorSubmodule, ModulePV);
+                // submoduleCount++;
+                G4ThreeVector* TransVectorCollimator =
+                    new G4ThreeVector(TransVectorModule->x() + submoduleTransX,
+                        0,
+                        TransVectorModule->z() + submoduleTransZ);
+                ConstructCrystals(SubmodulePV, TransVectorCollimator, CollimatorPV);
+                // ConstructCrystals(SubmodulePV, CollimatorPV, TransVectorCollimator, CrystalLV, CollimatorOpeningLV);
+                // ConstructCrystals(SubmodulePVs[submoduleID], TransVectorCollimator, CollimatorPV);
+                // G4cout << "submodule id " << submoduleID << G4endl;
+                assert(std::find(submoduleIDs.begin(), submoduleIDs.end(), submoduleID) ==
+                       submoduleIDs.end());
+                submoduleIDs.push_back(submoduleID);
+            }
+        }
+    }
+    // for (int submoduleInd = 0; submoduleInd < submoduleIDs.size(); submoduleInd++)
+    // {
+    //   ConstructCrystals(SubmodulePVs[submoduleInd]);
+    // }
+}
+void RingDetector::ConstructCrystals(G4VPhysicalVolume* SubmodulePV,
+    G4ThreeVector* TransVectorSubmodule, G4VPhysicalVolume* CollimatorPV) {
+    // G4VSolid *CrystalSolid = new G4Box("CrSd", fCrystalHLX, fCrystalHLY, fCrystalHLZ);
+    // G4LogicalVolume *CrystalLV = CreateLogicalVolume("CrLV", fCrystalMaterial, CrystalSolid);
+    // ColorLV(G4Colour::Red(), CrystalLV);
+    // G4int crystalCount = 0;
+
+    // CrystalSolid = new G4Box("CrSd", fCrystalHLX, fCrystalHLY, fCrystalHLZ);
+    // CrystalLV = CreateLogicalVolume("CrLV", fCrystalMaterial, CrystalSolid);
+    // ColorLV(G4Colour::Red(), CrystalLV);
+
+    G4int crystalID    = -1;
+    G4int collimatorID = -1;
+    // CrystalSolid = new G4Box("CrSd", fCrystalHLX, fCrystalHLY, fCrystalHLZ);
+    // CrystalLV = CreateLogicalVolume("CrLV", fCrystalMaterial, CrystalSolid);
+    // ColorLV(G4Colour::Red(), CrystalLV);
+    // G4VSolid *CollimatorOpeningSolid = fCollimatorExists ? new G4Box("CoOpSd", GetCollimatorOpeningHLX(), fCollimatorHLY, GetCollimatorOpeningHLZ()) : nullptr;
+    // G4LogicalVolume *CollimatorOpeningLV = fCollimatorExists ? CreateLogicalVolume("CoOpLV", fCollimatorOpeningMaterial, CollimatorOpeningSolid) : nullptr;
+    // if (fCollimatorExists)
+    // {
+    //   // G4ThreeVector *TransVectorSubmodule = TransVectorSubmodule;
+    //   ColorLV(1.0, 0.7529411, 0.796078, CollimatorOpeningLV);
+    // }
+    G4double crystalTransX, crystalTransY, crystalTransZ;
+    // G4cout << fGapZ << " " << NbOfZBins << " " << fCrystalHLZ << " " << fSubmoduleHLZ << G4endl;
+    // G4cout << -((fCrystalHLZ * 2) * NbOfZBins + fGapZ * (NbOfZBins - 1)) * 0.5 << G4endl;
+    // G4cout << (fCrystalHLZ * 2) << " " << (fCrystalHLZ * 2) * NbOfZBins << " " << fGapZ * (NbOfZBins - 1) << G4endl;
+    // G4cout << (-0.5 * ((fCrystalHLZ * 2) * NbOfZBins + fGapZ * (NbOfZBins - 1))) - (fSubmoduleHLZ * -1) << G4endl;
+    // assert(-((fCrystalHLZ * 2) * NbOfZBins + fGapZ * (NbOfZBins - 1)) * 0.5 == fSubmoduleHLZ * -1);
+    for (int crystalIndexY = 0; crystalIndexY < NbOfYBins; crystalIndexY++) {
+        crystalTransY = -((fCrystalHLY * 2) * NbOfYBins + fCrystalGapY * (NbOfYBins - 1)) * 0.5 +
+                        fCrystalHLY + (fCrystalHLY * 2 + fCrystalGapY) * crystalIndexY;
+        // crystalTransY = -(fCrystalHLY * NbOfYBins + fCrystalGapY * 0.5 * (NbOfYBins + 1)) * 1 + fCrystalGapY + fCrystalHLY + (fCrystalHLY * 2 + fCrystalGapY) * crystalIndexY;
+        assert(crystalTransY > -fSubmoduleHLY && crystalTransY < fSubmoduleHLY);
+
+        for (int crystalIndexZ = 0; crystalIndexZ < NbOfZBins; crystalIndexZ++) {
+            crystalTransZ =
+                -((fCrystalHLZ * 2) * NbOfZBins + fCrystalGapZ * (NbOfZBins - 1)) * 0.5 +
+                fCrystalHLZ + (fCrystalHLZ * 2 + fCrystalGapZ) * crystalIndexZ;
+            // crystalTransZ = -(fCrystalHLZ * NbOfZBins + fCrystalGapZ * 0.5 * (NbOfZBins + 1)) * 1 + fCrystalGapZ + fCrystalHLZ + (fCrystalHLZ * 2 + fCrystalGapZ) * crystalIndexZ;
+            assert(crystalTransZ > -fSubmoduleHLZ && crystalTransZ < fSubmoduleHLZ);
+            for (int crystalIndexX = 0; crystalIndexX < NbOfXBins; crystalIndexX++) {
+
+                crystalID =
+                    fCrystalCounter->GetCrystalID(crystalIndexX, crystalIndexY, crystalIndexZ);
+
+                crystalTransX =
+                    -((fCrystalHLX * 2) * NbOfXBins + fCrystalGapX * (NbOfXBins - 1)) * 0.5 +
+                    fCrystalHLX + (fCrystalHLX * 2 + fCrystalGapX) * crystalIndexX;
+                // crystalTransX = -((fCrystalHLX)*NbOfXBins + fCrystalGapX * 0.5 * (NbOfXBins + 1)) * 1 + fCrystalGapX + fCrystalHLX + (fCrystalHLX * 2 + fCrystalGapX) * crystalIndexX;
+                assert(crystalTransX > -fSubmoduleHLX && crystalTransX < fSubmoduleHLX);
+                G4ThreeVector* TransVectorCrystal =
+                    new G4ThreeVector(crystalTransX, crystalTransY, crystalTransZ);
+                G4VPhysicalVolume* CrystalPV = CreatePhysicalVolume(
+                    "CrPV", crystalID, true, CrystalLV, 0, TransVectorCrystal, SubmodulePV);
+                if (fCollimatorExists && crystalIndexY == 0) {
+                    G4ThreeVector* TransVectorCollimator =
+                        new G4ThreeVector(TransVectorSubmodule->x() + crystalTransX,
+                            0,
+                            TransVectorSubmodule->z() + crystalTransZ);
+                    collimatorID = fCrystalCounter->GetCollimatorID(crystalIndexX, crystalIndexZ);
+                    CreatePhysicalVolume("CoOpPV",
+                        collimatorID,
+                        true,
+                        CollimatorOpeningLV,
+                        0,
+                        TransVectorCollimator,
+                        CollimatorPV);
+                    assert(std::find(collimatorIDs.begin(), collimatorIDs.end(), collimatorID) ==
+                           collimatorIDs.end());
+                    collimatorIDs.push_back(collimatorID);
+                }
+                assert(
+                    std::find(crystalIDs.begin(), crystalIDs.end(), crystalID) == crystalIDs.end());
+                crystalIDs.push_back(crystalID);
+            }
+        }
+    }
+}
+
+void RingDetector::SaveCrystalCoordinate(void) {
+    std::ofstream fCrystalCoordinateFile;
+    fCrystalCoordinateFile.open(fCrystalCoordinateFilename + ".csv", std::ofstream::out);
+
+    G4cout << "Nb of daughter :" << fEnvelopeLog->GetNoDaughters() << G4endl;
+    for (int d0 = 0; d0 < fEnvelopeLog->GetNoDaughters(); d0++) {
+        G4VPhysicalVolume* daughter1 = fEnvelopeLog->GetDaughter(d0);   // Detector
+        G4cout << d0 << " : " << daughter1->GetName() << " " << daughter1->GetFrameTranslation()
+               << G4endl;
+        const G4ThreeVector     det_translation = daughter1->GetTranslation();
+        const G4RotationMatrix* det_rotation    = daughter1->GetRotation();
+        G4LogicalVolume*        DetectorLV1     = daughter1->GetLogicalVolume();
+        G4cout << d0 << " : " << daughter1->GetName() << " " << G4endl;
+        G4AffineTransform Tm_module(det_rotation, det_translation);
+        for (int d1 = 0; d1 < DetectorLV1->GetNoDaughters(); d1++) {
+            G4VPhysicalVolume* daughter2 = DetectorLV1->GetDaughter(d1);
+            // G4cout << d1 << " : " << daughter2->GetLogicalVolume()->GetName() << G4endl;
+            G4LogicalVolume*        ModuleLV1          = daughter2->GetLogicalVolume();
+            const G4ThreeVector     module_translation = daughter2->GetTranslation();
+            const G4RotationMatrix* module_rotation    = daughter2->GetRotation();
+
+            G4ThreeVector module_pos = Tm_module.TransformPoint(module_translation);
+            fCrystalCoordinateFile << d1 << " " << daughter2->GetName() << " " << module_pos
+                                   << G4endl;
+            for (int d2 = 0; d2 < ModuleLV1->GetNoDaughters(); d2++) {
+                G4VPhysicalVolume* daughter3 = ModuleLV1->GetDaughter(d2);
+                // G4cout << d2 << " : " << daughter3->GetLogicalVolume()->GetName() << G4endl;
+                G4LogicalVolume*        SubModuleLV1          = daughter3->GetLogicalVolume();
+                const G4ThreeVector     submodule_translation = daughter3->GetTranslation();
+                const G4RotationMatrix* submodule_rotation    = daughter3->GetRotation();
+                // const G4RotationMatrix *det_rotation2 = daughter1->GetRotation();
+
+                // const G4RotationMatrix *rot1 = det_rotation * module_rotation;
+                G4AffineTransform Tm_submodule(module_rotation, module_translation);
+                G4ThreeVector     submodule_pos =
+                    Tm_module.TransformPoint(Tm_submodule.TransformPoint(submodule_translation));
+                fCrystalCoordinateFile << d2 << " " << daughter3->GetName() << " " << submodule_pos
+                                       << G4endl;
+                for (int d3 = 0; d3 < SubModuleLV1->GetNoDaughters(); d3++) {
+                    G4VPhysicalVolume* daughter4           = SubModuleLV1->GetDaughter(d3);
+                    G4ThreeVector      crystal_translation = daughter4->GetTranslation();
+                    G4AffineTransform  Tm_crystal(submodule_rotation, submodule_translation);
+                    G4ThreeVector      crystal_pos =
+                        Tm_module.TransformPoint(Tm_submodule.TransformPoint(
+                            Tm_crystal.TransformPoint(crystal_translation)));
+                    fCrystalCoordinateFile << d3 << " " << daughter4->GetName() << " "
+                                           << crystal_pos << G4endl;
+                }
+            }
+        }
+    }
+    fCrystalCoordinateFile.close();
+    exit(-1);
+}
+// Create the detector geometry in the simulation
+G4VPhysicalVolume* RingDetector::Construct(void) {
+    // BeginConstruction();
+    // G4cerr << "Starting constructing " << fName << G4endl;
+    Detector::Construct();
+    GetDetectorType();
+    // GetNbOfRings();
+    GetRingRadius();
+
+    GetModuleHLZ();
+    GetModuleHLY();
+    GetModuleHLX();
+    GetNbOfModulesX();
+    GetNbOfModulesY();
+    GetNbOfModulesZ();
+
+    GetNbOfSubmodulesX();
+    GetNbOfSubmodulesY();
+    GetNbOfSubmodulesZ();
+    GetSubmoduleHLZ();
+    GetSubmoduleHLY();
+    GetSubmoduleHLX();
+
+    // GetNbOfXBins();
+    // GetNbOfYBins();
+    // GetNbOfZBins();
+    // GetCrystalHLX();
+    // GetCrystalHLY();
+    // GetCrystalHLZ();
+    // GetCollimatorHLY();
+
+    GetModuleGapHLX();
+    GetModuleGapHLY();
+    GetModuleGapHLZ();
+    GetSubmoduleGapHLX();
+    GetSubmoduleGapHLY();
+    GetSubmoduleGapHLZ();
+    GetCrystalGapHLX();
+    GetCrystalGapHLY();
+    GetCrystalGapHLZ();
+    GetNbOfDetectors();
+    GetMarginRings();
+
+    dbg(fRingRadius);
+    dbg(NbOfModulesX);
+    dbg(NbOfModulesZ);
+    dbg(NbOfDetectors);
+    dbg(NbOfXBins);
+    dbg(NbOfZBins);
+
+    // GetCollimatorMaterial();
+    // GetCollimatorOpeningMaterial();
+    // GetCrystalMaterial();
+    GetTubeMaterial();
+
+    GetCrystalCoordinateSave();
+
+    double maxNbDetectors = floor(M_PI / asin(fHLX / fRingRadius));
+
+    // G4VSolid *CollimatorDetectorSolid =
+    //     collimatorExists ? new G4Box("CoDtSd", fHLX, fCollimatorHLY, fHLZ)
+    //                      : nullptr;
+    // G4VSolid *CollimatorOpeningSolid =
+    //     collimatorExists ? new G4Box("CoOpSd", GetCollimatorOpeningHLX(),
+    //                                  fCollimatorHLY, GetCollimatorOpeningHLZ())
+    //                      : nullptr;
+    // CrystalDetectorSolid = new G4Box("CrDtSd", fHLX, fCrystalHLY, fHLZ);
+    // hollow cylinder that encapsulates the whole detector
+    // / cos(M_PI / maxNbDetectors)
+    G4VSolid* EmptyTubeSolid = new G4Tubs("TbSd",
+        fRingRadius,
+        (fRingRadius + 2 * fHLY + 2 * fCollimatorHLY) / cos(M_PI / maxNbDetectors),
+        (fModuleHLZ + fMarginRings) * NbOfModulesZ,
+        0,
+        2 * M_PI);
+    // fEnvelopeLog = CreateLogicalVolume("TbLV", fTubeMaterial, EmptyTubeSolid);
+    fEnvelopeLog = CreateLogicalVolume(EmptyTubeSolid);
+    ColorLV(1, 1, 1, fEnvelopeLog);
+
+    G4cerr << "HL: " << (fHLZ + fMarginRings) * NbOfModulesZ << G4endl;
+    G4cerr << "HL: " << fHLZ << ", " << fMarginRings << ", " << NbOfModulesZ << G4endl;
+
+    fEnvelopePhys        = CreatePhysicalVolume(fEnvelopeLog);
+    fCrystalCounter      = GetCrystalCounter();
+    G4int NbOfModules    = NbOfModulesX * NbOfModulesY * NbOfModulesZ * NbOfDetectors;
+    G4int NbOfSubmodules = NbOfSubmodulesX * NbOfSubmodulesY * NbOfSubmodulesZ * NbOfModules;
+    G4int NbOfCrystals   = NbOfXBins * NbOfYBins * NbOfZBins * NbOfSubmodules;
+
+    CrystalSolid = new G4Box("CrSd", fCrystalHLX, fCrystalHLY, fCrystalHLZ);
+    CrystalLV    = CreateLogicalVolume("CrLV", fCrystalMaterial, CrystalSolid);
+    ColorLV(G4Colour::Red(), CrystalLV);
+
+    // CollimatorDetectorSolid = fCollimatorExists ? new G4Box("CoDtSd", fHLX, fCollimatorHLY, fHLZ) : nullptr;
+    // CollimatorDetectorLV = fCollimatorExists ? CreateLogicalVolume("CoDtLV", fCollimatorMaterial, CollimatorDetectorSolid) : nullptr;
+    // CollimatorDetectorPV = nullptr;
+    CollimatorOpeningSolid =
+        fCollimatorExists
+            ? new G4Box(
+                  "CoOpSd", GetCollimatorOpeningHLX(), fCollimatorHLY, GetCollimatorOpeningHLZ())
+            : nullptr;
+    CollimatorOpeningLV =
+        fCollimatorExists
+            ? CreateLogicalVolume("CoOpLV", fCollimatorOpeningMaterial, CollimatorOpeningSolid)
+            : nullptr;
+
+    if (fCollimatorExists) {
+        // ColorLV(G4Colour::Green(), CollimatorDetectorLV);
+        ColorLV(1.0, 0.7529411, 0.796078, CollimatorOpeningLV);
+    }
+
+    ConstructDetector();
+    if (fSaveCrystalCoordinate) {
+        SaveCrystalCoordinate();
+    }
+    int minInd1 = *std::min_element(moduleIDs.begin(), moduleIDs.end());
+    int maxInd1 = *std::max_element(moduleIDs.begin(), moduleIDs.end());
+    G4cout << "module " << minInd1 << " " << maxInd1 << G4endl;
+    assert(
+        minInd1 == 0 && maxInd1 == NbOfModulesX * NbOfModulesZ * NbOfModulesY * NbOfDetectors - 1);
+
+    int minInd2 = *std::min_element(submoduleIDs.begin(), submoduleIDs.end());
+    int maxInd2 = *std::max_element(submoduleIDs.begin(), submoduleIDs.end());
+    G4cout << "submodule " << minInd2 << " " << maxInd2 << G4endl;
+    assert(minInd2 == 0 && maxInd2 == NbOfModulesX * NbOfSubmodulesX * NbOfModulesZ *
+                                              NbOfSubmodulesZ * NbOfModulesY * NbOfSubmodulesY *
+                                              NbOfDetectors -
+                                          1);
+
+    // auto print = [&](int id)
+    // {
+    //   std::cout << "@" << id << ": ";
+    //   for (int i : crystalIDs)
+    //     std::cout << i << ' ';
+    //   std::cout << '\n';
+    // };
+
+    int minInd3 = *std::min_element(crystalIDs.begin(), crystalIDs.end());
+    int maxInd3 = *std::max_element(crystalIDs.begin(), crystalIDs.end());
+    G4cout << "crystal " << minInd3 << " " << maxInd3 << G4endl;
+    std::sort(crystalIDs.begin(), crystalIDs.end());   // {1 1 2 3 4 4 5}
+    auto last = std::unique(crystalIDs.begin(), crystalIDs.end());
+    crystalIDs.erase(last, crystalIDs.end());
+    // print(1);
+    assert(minInd3 == 0 && maxInd3 == NbOfXBins * NbOfModulesX * NbOfSubmodulesX * NbOfZBins *
+                                              NbOfModulesZ * NbOfSubmodulesZ * NbOfYBins *
+                                              NbOfModulesY * NbOfSubmodulesY * NbOfDetectors -
+                                          1);
+    // if (fCollimatorExists)
+    // {
+    //   int minInd4 = *std::min_element(collimatorIDs.begin(), collimatorIDs.end());
+    //   int maxInd4 = *std::max_element(collimatorIDs.begin(), collimatorIDs.end());
+    //   G4cout << "module " << minInd4 << " " << maxInd4 << G4endl;
+    //   assert(minInd4 == 0 && maxInd4 == NbOfXBins * NbOfModulesX * NbOfSubmodulesX * NbOfZBins * NbOfModulesZ * NbOfSubmodulesZ * NbOfDetectors - 1);
+    // }
+    SetTooComplexForOGLS();
+    return fEnvelopePhys;
+}

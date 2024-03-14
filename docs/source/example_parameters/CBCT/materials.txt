@@ -1,0 +1,43 @@
+
+#================ Material definition ================
+
+#================ CsI ================ 
+sv:Ma/CsI/Components               = 2 "G4_Cs" "G4_I"
+d:Ma/CsI/Density                   = 4.51 g/cm3
+d:Ma/CsI/MeanExcitationEnergy      = 553.1 eV
+uv:Ma/CsI/Fractions                = 2 0.511549 0.488451
+s:El/G4_Cs/Symbol                  = "Cs"
+s:El/G4_I/Symbol                   = "I"
+s:Ma/CsI/DefaultColor              = "pink"
+d:Ma/CsI/MinimimIonization         = 5.05 MeV/cm
+d:Ma/CsI/CriticalEnergy            = 11.17 MeV
+u:Ma/CsI/ScintillationYield        = 6000
+d:Ma/CsI/FastTimeConstant          = 700 ns
+d:Ma/CsI/SlowTimeConstant          = 3500 ns
+u:Ma/CsI/YieldRatio                = 0.57
+u:Ma/CsI/ResolutionScale           = 1.0
+dv:Ma/CsI/RefractiveIndex/Energies = 1 2.25836 eV
+uv:Ma/CsI/RefractiveIndex/Values   = 1 1.79
+dv:Ma/CsI/AbsLength/Energies       = 1 2.25836 eV
+dv:Ma/CsI/AbsLength/Values         = 1 1.25 cm 
+dv:Ma/CsI/FastComponent/Energies   = 1 2.25836 eV
+uv:Ma/CsI/FastComponent/Values     = 1 1.0
+u:Ma/CsI/BirksConstant             = 0.00152
+b:Ma/CsI/EnableOpticalProperties   = "True"
+
+#================ SiO2 ================
+sv:Ma/SiO2/Components               = 2 "G4_Si" "G4_O"
+d:Ma/SiO2/Density                   = 2.6 g/cm3
+d:Ma/SiO2/MeanExcitationEnergy      = 553.1 eV
+uv:Ma/SiO2/Fractions                = 2 0.467435 0.532565
+s:El/G4_Si/Symbol                   = "Si"
+s:El/G4_O/Symbol                    = "O"
+s:Ma/SiO2/DefaultColor              = "pink"
+d:Ma/SiO2/MinimimIonization         = 3.737 MeV/cm
+d:Ma/SiO2/CriticalEnergy            = 50.58 MeV
+dv:Ma/SiO2/RefractiveIndex/Energies = 1 2.25836 eV
+uv:Ma/SiO2/RefractiveIndex/Values   = 1 1.7
+dv:Ma/SiO2/AbsLength/Energies       = 1 2.25836 eV
+dv:Ma/SiO2/AbsLength/Values         = 1 0.001 cm
+dv:Ma/SiO2/Efficiency/Energies      = 2 0.01 5.25836 eV
+uv:Ma/SiO2/Efficiency/Values        = 2 1.0 1.0

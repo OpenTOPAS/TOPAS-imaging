@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Scorers &#8212; TOPAS-imaging v1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Examples" href="../examples/index.html" />
+    <link rel="prev" title="Detector geometries" href="../detectors/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="scorers">
+<h1>Scorers<a class="headerlink" href="#scorers" title="Permalink to this heading">¶</a></h1>
+<p>In this extension, we have 2 main scorers.</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#binned-scorer"><span class="std std-ref">Binned scorer</span></a></p></li>
+<li><p><a class="reference internal" href="#ntuple-scorer"><span class="std std-ref">NTUple scorer</span></a></p></li>
+</ol>
+<p>You can also add <a class="reference internal" href="#digitizers"><span class="std std-ref">Digitizers</span></a> to the scorers to process detected signals.</p>
+<section id="binned-scorer">
+<span id="id1"></span><h2>Binned scorer<a class="headerlink" href="#binned-scorer" title="Permalink to this heading">¶</a></h2>
+<p>The binned scorer accumuates detected signal in divided volume.</p>
+<p>The binned scorer is useful for CBCT or Prompt gamma acquisition.</p>
+<p>You need to set the number of bins on the scoring volume to score by binned:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">i</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Scorer</span><span class="o">/</span><span class="n">XBins</span>     <span class="o">=</span> <span class="mi">512</span>
+<span class="n">i</span><span class="p">:</span><span class="n">Ge</span><span class="o">/</span><span class="n">Scorer</span><span class="o">/</span><span class="n">YBins</span>     <span class="o">=</span> <span class="mi">512</span>
+</pre></div>
+</div>
+<p>If you are using FlatImager for a detector, there are more than one surface and you need to define which surface will be used for scoring.
+To score on the surface between scitillator and photo detector layers on FlatImager, you need to set:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">Scorer</span><span class="o">/</span><span class="n">Surface</span> <span class="o">=</span> <span class="s2">&quot;Imager/PhotoDetectorScintillatorInterface&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="ntuple-scorer">
+<span id="id2"></span><h2>NTUple scorer<a class="headerlink" href="#ntuple-scorer" title="Permalink to this heading">¶</a></h2>
+<p>The NTuple scorer saves the information of detected signals per each line similar to PhaseSpace.</p>
+<p>The NTupble scorer is useful for PET or SPECT image acquisition.</p>
+</section>
+<section id="digitizers">
+<span id="id3"></span><h2>Digitizers<a class="headerlink" href="#digitizers" title="Permalink to this heading">¶</a></h2>
+<p>We have implemnted the following digitizers:</p>
+<ul class="simple">
+<li><p>Time resolution</p></li>
+<li><p>Dead time</p></li>
+<li><p>Energy cutoff</p></li>
+<li><p>Sigmoial threshold</p></li>
+<li><p>Pulse pile up</p></li>
+</ul>
+<p>You can build digitizer chain by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sv</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">PETScore</span><span class="o">/</span><span class="n">Digitizers</span>   <span class="o">=</span> <span class="mi">3</span> <span class="s2">&quot;EnergyCutoff&quot;</span> <span class="s2">&quot;TimeResolution&quot;</span> <span class="s2">&quot;DeadTime&quot;</span>
+</pre></div>
+</div>
+<p>The digitizers will be applied sequentially as set by user.</p>
+<p>Parameters for digitizers can be defined as follow:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">PETScore</span><span class="o">/</span><span class="n">Digitizer</span><span class="o">/</span><span class="n">TimeResolution</span>                 <span class="o">=</span> <span class="mi">500</span> <span class="n">ps</span> <span class="c1"># Time resolution</span>
+<span class="n">d</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">PETScore</span><span class="o">/</span><span class="n">Digitizer</span><span class="o">/</span><span class="n">DeadTime</span>                       <span class="o">=</span> <span class="mf">10.</span> <span class="n">ms</span> <span class="c1"># Dead time</span>
+<span class="n">d</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">PETScore</span><span class="o">/</span><span class="n">Digitizer</span><span class="o">/</span><span class="n">EnergyCutoff</span><span class="o">/</span><span class="n">Threshold</span>         <span class="o">=</span> <span class="mi">400</span> <span class="n">keV</span> <span class="c1"># Energy cutoff</span>
+<span class="n">d</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">PETScore</span><span class="o">/</span><span class="n">Digitizer</span><span class="o">/</span><span class="n">EnergyCutoff</span><span class="o">/</span><span class="n">Uphold</span>            <span class="o">=</span> <span class="mi">650</span> <span class="n">keV</span> <span class="c1"># Energy cutoff</span>
+<span class="n">d</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">PETScore</span><span class="o">/</span><span class="n">Digitizer</span><span class="o">/</span><span class="n">SigmoidalThresholder</span><span class="o">/</span><span class="n">Threshold</span> <span class="o">=</span> <span class="mi">650</span> <span class="n">keV</span> <span class="c1"># Energy cutoff</span>
+<span class="n">u</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">PETScore</span><span class="o">/</span><span class="n">Digitizer</span><span class="o">/</span><span class="n">SigmoidalThresholder</span><span class="o">/</span><span class="n">Alpha</span>     <span class="o">=</span> <span class="mf">50.</span>
+<span class="n">u</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">PETScore</span><span class="o">/</span><span class="n">Digitizer</span><span class="o">/</span><span class="n">SigmoidalThresholder</span><span class="o">/</span><span class="n">Percent</span>   <span class="o">=</span> <span class="mf">0.9</span>
+<span class="n">d</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">PETScore</span><span class="o">/</span><span class="n">Digitizer</span><span class="o">/</span><span class="n">PulsePileUp</span><span class="o">/</span><span class="n">TimingWindow</span>       <span class="o">=</span> <span class="mi">100</span> <span class="n">ns</span>
+</pre></div>
+</div>
+</section>
+<section id="optical-spread-function">
+<span id="id4"></span><h2>Optical spread function<a class="headerlink" href="#optical-spread-function" title="Permalink to this heading">¶</a></h2>
+<p>In radiation detection, photon is converted into visible light (a.k.a. optical photon) to be detected.</p>
+<p>However, an interaction between photon and scintillating crystal creates tens of thousand optical photons, thus it slows down the simulation.
+To improve the computational efficiency of the simulation, optical spread function (<a class="reference external" href="https://iopscience.iop.org/article/10.1088/1361-6560/ab12aa">[Shi, et al., Physics in Medicine and Biology (2019)]</a> and <a class="reference external" href="https://aapm.onlinelibrary.wiley.com/doi/abs/10.1002/mp.15007">[O’Connell and Bazalova-Carter, Medical Physics (2021)]</a>) was proposed as an variance reduction technique.</p>
+<p>The idea of OSF is to numerically model the spread of optical photon in Gaussian function instead of track each optical photon.</p>
+<p>We have implemented scorer using optical spread function. To utilize the scorer, one needs to measure optical spread function (OSF) separately and provides them for the simulation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#============== Optical spread function parameters ========</span>
+<span class="n">i</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">CBCTscorer</span><span class="o">/</span><span class="n">HKernelU</span>                       <span class="o">=</span> <span class="mi">5</span> <span class="c1"># size of OSF kernels</span>
+<span class="n">i</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">CBCTscorer</span><span class="o">/</span><span class="n">HKernelV</span>                       <span class="o">=</span> <span class="mi">5</span> <span class="c1"># size of OSF kernels</span>
+<span class="n">d</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">CBCTscorer</span><span class="o">/</span><span class="n">InitialEnergy</span>                  <span class="o">=</span> <span class="mf">10.0</span> <span class="n">keV</span>
+<span class="n">d</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">CBCTscorer</span><span class="o">/</span><span class="n">EnergyStep</span>                     <span class="o">=</span> <span class="mf">5.0</span> <span class="n">keV</span>
+<span class="n">dv</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">CBCTscorer</span><span class="o">/</span><span class="n">DetectorEfficiency</span><span class="o">/</span><span class="n">Energies</span>   <span class="o">=</span> <span class="mi">27</span> <span class="mf">10.0</span> <span class="mf">15.0</span> <span class="mf">20.0</span> <span class="mf">25.0</span> <span class="mf">30.0</span> <span class="mf">35.0</span> <span class="mf">40.0</span> <span class="mf">45.0</span> <span class="mf">50.0</span> <span class="mf">55.0</span> <span class="mf">60.0</span> <span class="mf">65.0</span> <span class="mf">70.0</span> <span class="mf">75.0</span> <span class="mf">80.0</span> <span class="mf">85.0</span> <span class="mf">90.0</span> <span class="mf">95.0</span> <span class="mf">100.0</span> <span class="mf">105.0</span> <span class="mf">110.0</span> <span class="mf">115.0</span> <span class="mf">120.0</span> <span class="mf">125.0</span> <span class="mf">130.0</span> <span class="mf">135.0</span> <span class="mf">140.0</span> <span class="n">keV</span>
+<span class="n">uv</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">CBCTscorer</span><span class="o">/</span><span class="n">DetectorEfficiency</span><span class="o">/</span><span class="n">Efficiency</span> <span class="o">=</span> <span class="mi">27</span> <span class="mf">0.000398</span> <span class="mf">0.026029</span> <span class="mf">0.067879</span> <span class="mf">0.080005</span> <span class="mf">0.069582</span> <span class="mf">0.079304</span> <span class="mf">0.064622</span> <span class="mf">0.069822</span> <span class="mf">0.069503</span> <span class="mf">0.065332</span> <span class="mf">0.059056</span> <span class="mf">0.052028</span> <span class="mf">0.045107</span> <span class="mf">0.038802</span> <span class="mf">0.033204</span> <span class="mf">0.028320</span> <span class="mf">0.024101</span> <span class="mf">0.020590</span> <span class="mf">0.017658</span> <span class="mf">0.015201</span> <span class="mf">0.013128</span> <span class="mf">0.011383</span> <span class="mf">0.009911</span> <span class="mf">0.008660</span> <span class="mf">0.007598</span> <span class="mf">0.006690</span> <span class="mf">0.005907</span>
+<span class="n">s</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">CBCTscorer</span><span class="o">/</span><span class="n">OSFPath</span>                        <span class="o">=</span> <span class="s2">&quot;&lt;path-to-osfs&gt;&quot;</span>
+<span class="n">b</span><span class="p">:</span><span class="n">Sc</span><span class="o">/</span><span class="n">CBCTscorer</span><span class="o">/</span><span class="n">ForceInteraction</span>               <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+</pre></div>
+</div>
+<p>TOPAS parameters to simulate OSF can be found in the <a class="reference internal" href="../examples/OSF.html"><span class="doc">example</span></a>.</p>
+<p>One can find detail description of measuring OSF in the previous publication (<a class="reference external" href="https://iopscience.iop.org/article/10.1088/1361-6560/ab12aa">Shi, et al., Physics in Medicine and Biology (2019)</a>)</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">TOPAS-imaging</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../detectors/index.html">Detector geometries</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scorers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#binned-scorer">Binned scorer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ntuple-scorer">NTUple scorer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#digitizers">Digitizers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optical-spread-function">Optical spread function</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../detectors/index.html" title="previous chapter">Detector geometries</a></li>
+      <li>Next: <a href="../examples/index.html" title="next chapter">Examples</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Hoyeon Lee.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/scorers/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
