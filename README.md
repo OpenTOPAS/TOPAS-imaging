@@ -66,4 +66,4 @@ More details about the options during CASToR reconstruction can be found in the 
 
 Congratulations! You now have an image!
 
-More documentation can be found in assets/docs
+More documentation can be found in [OpenTOPAS documentation](https://opentopas.readthedocs.io/en/latest/extensions/imaging/index.html) 
