@@ -1,4 +1,0 @@
-CBCT system
-=========================================
-
-.. literalinclude:: /example_parameters/CBCT.txt

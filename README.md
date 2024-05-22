@@ -1,16 +1,17 @@
 # SPECT | PET | Prompt Gamma | CBCT 
 
-Extentions used to implement SPECT, PET, Prompt Gamma, and CBCT in Topas.
+Extentions used to implement SPECT, PET, Prompt Gamma, and CBCT in OpenTOPAS.
 
 # Getting Started
 
 ## Tools required
 
-This code is an extension for TOPAS for simulating imaging systems that gives output that can be read by either a custom program or CASToR for image reconstruction.  
+This code is an extension for OpenTOPAS for simulating imaging systems that gives output that can be read by either a custom program or CASToR for image reconstruction.  
 
 Here is a list of recommended software to use with this:  
 
-* TOPAS MC: http://www.topasmc.org/ After registration, this can be installed by using building TOPAS with cmake according to the TOPAS installation guide available after registration. This extension was developed on machines running at least gcc version 7.5.0 and cmake version 3.17.3
+* OpenTOPAS: https://github.com/OpenTOPAS/OpenTOPAS.git. Follow the QuickStart installation guides for [Debian](https://github.com/OpenTOPAS/OpenTOPAS/blob/master/OpenTOPAS_quickStart_Debian.md) 
+             or [MacOS](https://github.com/OpenTOPAS/OpenTOPAS/blob/master/OpenTOPAS_quickStart_forMacOS.md). This extension was developed on machines running at least gcc version 7.5.0 and cmake version 3.17.3
 * CASToR: http://www.castor-project.org/ This can be used for image reconstruction of CASToR specific output from this extension.
 * ImageJ: https://imagej.nih.gov/ij/ This can read the output files from CASToR image reconstruction with this extension: https://web.archive.org/web/20180213061550/http://www.med.harvard.edu/JPNM/ij/plugins/Interfile.html and its "Plugins/NucMed/Nucmed Open" option.
 * AMIDE: This can also read the output files from CASToR image reconstruction
@@ -30,14 +31,14 @@ All the scorers are based off of DigitizerScorer, a scorer that works like a pha
 
 ### Geometry
 
-The specifications of the detector geometry can be put into the TOPAS simulation by using a RingDetector geometry component. A RingDetector is made up of a given number of detector blocks filled in with a given number of crystals and possibly a collimator, if collimators are used for the chosen ```DetectorType```.
+The specifications of the detector geometry can be put into the OpenTOPAS simulation by using a RingDetector geometry component. A RingDetector is made up of a given number of detector blocks filled in with a given number of crystals and possibly a collimator, if collimators are used for the chosen ```DetectorType```.
 
 ### Source
 
-* PET: A standard TOPAS positron source can be used to automatically get annihilation events for detection or the custom ```ParallelPhotonBeamSource``` can emit parallel photons just like a positron annihilation creates with given error levels from a point. There is currently no volumetric version of this source.
-* SPECT: A standard TOPAS photon source will work.
+* PET: A standard OpenTOPAS positron source can be used to automatically get annihilation events for detection or the custom ```ParallelPhotonBeamSource``` can emit parallel photons just like a positron annihilation creates with given error levels from a point. There is currently no volumetric version of this source.
+* SPECT: A standard OpenTOPAS photon source will work.
 * PG: [TODO]
-* CBCT: There is an example of the source using standard TOPAS in the example parameter file.
+* CBCT: There is an example of the source using standard OpenTOPAS in the example parameter file.
 
 ## Getting your first image
 
@@ -49,7 +50,7 @@ For every scanner, CASToR has a .geom file that describes the geometry of the sc
 
 You can also move the .geom file to this directory manually after outputting it alongside the other files by setting ```s:Ge/Detector/CastorGeomDirectory = ""```
 
-After it runs, there will be four output files with four extensions: .header, .phsp, .cdh, and .cdf . The .header and .phsp are TOPAS output files that contain raw data from the DigitizerScorer about the readings from the simulation that can be read by external programs (see python scripts for examples). The .cdh file is a CASToR header that describes the measurements for CASToR reconstruction. The .cdf file contains binary data that can be read by CASToR. There may also be the .geom file that needs to be moved to the ```/config/scanner``` directory.
+After it runs, there will be four output files with four extensions: .header, .phsp, .cdh, and .cdf . The .header and .phsp are OpenTOPAS output files that contain raw data from the DigitizerScorer about the readings from the simulation that can be read by external programs (see python scripts for examples). The .cdh file is a CASToR header that describes the measurements for CASToR reconstruction. The .cdf file contains binary data that can be read by CASToR. There may also be the .geom file that needs to be moved to the ```/config/scanner``` directory.
 
 Then you can run this command to reconstruct the image:
 

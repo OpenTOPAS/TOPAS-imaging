@@ -1,7 +1,0 @@
-
-#=============CONE BEAM===========
-d:So/XRay/BeamEnergy= 60.0 keV
-s:Sc/Ascorer4/OutputFile = "../OSF_results_no_carbon2/opticalphoton_count_60keV"
-s:Sc/Ascorer5/OutputFile = "../OSF_results_no_carbon2/photon_count_60keV"
-s:Sc/Ascorer6/OutputFile = "../OSF_results_no_carbon2/deposit_scintillator_60keV"
-s:Sc/Ascorer7/OutputFile = "../OSF_results_no_carbon2/opticalphoton_std_60keV"

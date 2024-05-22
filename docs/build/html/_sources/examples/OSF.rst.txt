@@ -1,4 +1,0 @@
-Optical spread function
-=========================================
-
-.. literalinclude:: /example_parameters/OSF.txt
