@@ -1,0 +1,44 @@
+includeFile = ../materials.txt
+includeFile = ../detector.txt ../source.txt ../scorer.txt
+
+d:Ge/World/HLX = 20 cm # Half Length
+d:Ge/World/HLY = 20 cm
+d:Ge/World/HLZ = 20 cm
+
+# Redefine default material must be in the highest parameter file
+dv:Ma/Air/RIndex/Energies = 3 2.0 3.5 7.14 eV
+uv:Ma/Air/RIndex/Values = 3 1.0 1.0 1.0
+b:Ma/Air/EnableOpticalProperties   = "True"
+
+sv:Ph/Default/Modules = 2 "g4em-standard_opt2" "g4optical"
+
+#s:Gr/MyOGL/Type                             = "OpenGL"
+#i:Gr/MyOGL/WindowSizeX                      = 600
+#i:Gr/MyOGL/WindowSizeY                      = 600
+#i:Gr/MyOGL/WindowPosX                       = 0
+#i:Gr/MyOGL/WindowPosY                       = 0
+#u:Gr/MyOGL/Zoom                             = 145.
+#d:Gr/MyOGL/Theta                            = 0. deg
+#d:Gr/MyOGL/Phi                              = 0. deg
+#b:Gr/MyOGL/IncludeGeometry                  = "t"
+#b:Gr/MyOGL/IncludeTrajectories              = "t"
+#b:Gr/MyOGL/HiddenLineRemovalForGeometry     = "f"
+#b:Gr/MyOGL/HiddenLineRemovalForTrajectories = "f"
+#Ts/UseQt                                    = "True"
+#b:Gr/MyOGL/IncludeAxes                      = "False" # defaults to "False"
+#d:Gr/MyOGL/AxesSize                         = 5. mm # size of axes
+#sv:Gr/MyOGL/ColorByParticleTypeNames      = 5 "e-" "gamma" "proton" "neutron" "opticalphoton"
+#sv:Gr/MyOGL/ColorByParticleTypeColors     = 5 "green" "pink" "aqua" "grass" "blue"
+#s:Gr/MyOGL/ColorBy     = "ParticleType"
+
+i:Ts/ShowHistoryCountAtInterval = 1000000 # How often to print history count to the console
+d:Ge/BeamPosition/TransZ = 0 mm # + Ge/BeamPosition/DisplaceZ
+i:Ts/NumberOfThreads     = 4 # defaults to 1
+
+s:Sc/ScntillatorEdep/OutputFile = "../OSF_CBCT_results/deposit_scintillator_100keV"
+s:Sc/PhotdetEdep/OutputFile     = "../OSF_CBCT_results/optical_photon_count_100keV"
+s:Sc/PhotdetEdep2/OutputFile    = "../OSF_CBCT_results/optical_photon_count_std_100keV"
+
+d:So/XRay/BeamEnergy     = 100.0 keV
+i:Ts/Seed                = 1 # default is 1
+
