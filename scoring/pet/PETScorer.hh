@@ -9,12 +9,13 @@
 #include "CoincidenceCounter.hh"
 #include "DigitizerModule.hh"
 #include "DigitizerScorer.hh"
+#include "DigitizerScorerCrystalOnly.hh"
 #include "G4AutoLock.hh"
 #include "G4Threading.hh"
 #include "Pulse.hh"
 #include "TsVNtupleScorer.hh"
 
-class PETScorer : public DigitizerScorer
+class PETScorer : public DigitizerScorerCrystalOnly
 {
 public:
     PETScorer(TsParameterManager* pM, TsMaterialManager* mM, TsGeometryManager* gM,
