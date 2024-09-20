@@ -23,7 +23,7 @@
 PETScorer::PETScorer(TsParameterManager* pM, TsMaterialManager* mM, TsGeometryManager* gM,
     TsScoringManager* scM, TsExtensionManager* eM, G4String scorerName, G4String quantity,
     G4String outFileName, G4bool isSubScorer) :
-    DigitizerScorer(
+    DigitizerScorerCrystalOnly(
         pM, mM, gM, scM, eM, scorerName, quantity, outFileName, isSubScorer) {
     InitializeOutputColumns();
 
@@ -363,7 +363,7 @@ void PETScorer::Output() {
     delete coincidenceCounterRandoms;
 }
 void PETScorer::UserHookForEndOfRun() {
-
+    std::cout<<"UserHookForEndOfRun"<<std::endl;
     DigitizerScorer::UserHookForEndOfRun();
 
     // G4AutoLock l(&aMutex);
