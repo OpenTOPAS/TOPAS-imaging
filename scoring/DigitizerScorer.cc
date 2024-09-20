@@ -91,8 +91,7 @@ DigitizerScorer::DigitizerScorer(G4bool isInherited, TsParameterManager* pM, TsM
 
 DigitizerScorer::DigitizerScorer(TsParameterManager* pM, TsMaterialManager* mM, TsGeometryManager* gM,
     TsScoringManager* scM, TsExtensionManager* eM, G4String scorerName, G4String quantity, G4String outFileName,
-    G4bool isSubScorer) :
-    DigitizerScorer(false, pM, mM, gM, scM, eM, scorerName, quantity, outFileName, isSubScorer) {
+    G4bool isSubScorer) : DigitizerScorer(false, pM, mM, gM, scM, eM, scorerName, quantity, outFileName, isSubScorer) {
     ;
 }
 
@@ -142,22 +141,9 @@ void DigitizerScorer::UserHookForEndOfRun() {
         FillOutputColumns(addedPulses);
         G4cout << "Filloutput columns end" << G4endl;
     }
-    // G4cout << "CONSOLIDATING AT END" << G4endl;
-    // ApplyDigitizers();
-    // G4cout << "Filloutput columns" << G4endl;
-    // FillOutputColumns(addedPulses);
-    // G4cout << "Filloutput columns end" << G4endl;
+
     addedPulses->clear();
     eventOffsets.clear();
-
-    // G4cout << "Pulse size: " << addedPulses->size() << G4endl;
-
-    // G4cout << "CONSOLIDATING AT END" << G4endl;
-    // G4cout << "addedPulse size: " << addedPulses->size() << G4endl;
-    // ApplyDigitizers();
-    // FillOutputColumns(addedPulses);
-    // addedPulses->clear();
-    // G4cout << "addedPulse after save size: " << addedPulses->size() << G4endl;
     l.unlock();
 }
 void DigitizerScorer::PositionCorrection() {
@@ -217,6 +203,7 @@ G4bool DigitizerScorer::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
         fSkippedWhileInactive++;
         return false;
     }
+    //    std::cout<<"ProcessHits start"<<std::endl;
 
     fEventID = GetEventID();
     ResolveSolid(aStep);
@@ -224,24 +211,24 @@ G4bool DigitizerScorer::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     if (edep == 0) {
         return false;
     }
-    // G4cout << aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName() << G4endl;
-    const auto hitID   = std::make_pair(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName(), fEventID);
+
+    const auto hitID   = std::make_pair(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName(), fEventID);
     auto       lowIter = std::lower_bound(
         pulses.begin(), pulses.end(), hitID, [&](std::pair<ID, Pulse> a, ID b) { return a.first < b; });
+
     if (lowIter == pulses.end() || lowIter->first != hitID) {
 
         // randomly offset times of histories
         G4double   offset = 0;
         G4AutoLock l(&aMutex);
+
         if (eventOffsets.find(fEventID) != eventOffsets.end()) {   // key exists
             offset = eventOffsets[fEventID];
         } else {   // key doesn't exist
             offset = fOffsetWindow * G4UniformRand();
-            // G4cout << fEventID << ": " << offset /s << " s" << G4endl;
             eventOffsets[fEventID] = offset;
         }
         l.unlock();
-
         pulses.insert(lowIter, std::make_pair(hitID, Pulse(aStep, GetTime() + offset, fProjectionID, fEventID)));
     } else {
         lowIter->second.Add(aStep);
