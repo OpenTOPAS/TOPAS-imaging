@@ -7,14 +7,15 @@ b:Sc/ScntillatorEdep/OutputToConsole            = "True"
 s:Sc/ScntillatorEdep/IfOutputFileAlreadyExists  = "Overwrite"
 sv:Sc/ScntillatorEdep/Report = 2 "Sum" "Mean"
 
+
 s:Sc/PhotdetEdep/Quantity                   = "SurfaceTrackCount"
 s:Sc/PhotdetEdep/Surface                    = "PhotdetBox/ZPlusSurface"
 sv:Sc/PhotdetEdep/OnlyIncludeParticlesNamed = 1 "opticalphoton"
 s:Sc/PhotdetEdep/OutputType                 = "binary"
 b:Sc/PhotdetEdep/OutputToConsole            = "False"
 s:Sc/PhotdetEdep/IfOutputFileAlreadyExists  ="Overwrite"
-i:Sc/PhotdetEdep/XBins                      = 25 #10
-i:Sc/PhotdetEdep/YBins                      = 25 #10
+i:Sc/PhotdetEdep/XBins                      = 11 #10
+i:Sc/PhotdetEdep/YBins                      = 11 #10
 
 
 s:Sc/PhotdetEdep2/Quantity                   = "SurfaceTrackCount"
@@ -23,6 +24,6 @@ sv:Sc/PhotdetEdep2/OnlyIncludeParticlesNamed = 1 "opticalphoton"
 s:Sc/PhotdetEdep2/OutputType                 = "binary"
 b:Sc/PhotdetEdep2/OutputToConsole            = "False"
 s:Sc/PhotdetEdep2/IfOutputFileAlreadyExists  ="Overwrite"
-i:Sc/PhotdetEdep2/XBins                      = 25 #10
-i:Sc/PhotdetEdep2/YBins                      = 25 #10
+i:Sc/PhotdetEdep2/XBins                      = 11 #10
+i:Sc/PhotdetEdep2/YBins                      = 11 #10
 sv:Sc/PhotdetEdep2/Report                    = 1 "Standard_Deviation"
