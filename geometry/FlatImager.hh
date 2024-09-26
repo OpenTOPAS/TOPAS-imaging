@@ -54,6 +54,12 @@ protected:
     G4int     fPtDtDivisionCount[3];
 
     // Functions for Detector Parameters
+    void GetHLX(void);
+    void GetHLY(void);
+    void GetHLZ(void);
+    void GetCrystalGapX(void);
+    void GetCrystalGapY(void);
+    void GetCrystalGapZ(void);
     void GetNbOfDetectors(void);
     void GetCrystalSize(void);
 
@@ -79,6 +85,8 @@ protected:
     G4double GetCrystalGapHLX(void);
     G4double GetCrystalGapHLY(void);
     G4double GetCrystalGapHLZ(void);
+    G4double GetCollimatorOpeningHLX(void);
+    G4double GetCollimatorOpeningHLY(void);
 
     G4bool   IsOnBoundary(G4ThreeVector, G4VSolid*, SurfaceType);
     G4double GetAreaOfSelectedSurface(G4VSolid*, SurfaceType, G4int, G4int, G4int);
