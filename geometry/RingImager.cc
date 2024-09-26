@@ -298,6 +298,7 @@ G4double RingImager::GetAngle(int detectorID) {
 
 // CrystalCounter *RingImager::GetCrystalCounter(void)
 void RingImager::SetCrystalCounter(void) {
+    G4cout<<"RingImager::SetCrystalCounter"<<G4endl;
     NbOfAxialModules         = NbOfModulesZ;
     NbOfLayerModules         = NbOfModulesY;
     NbOfTransaxialModules    = NbOfModulesX;
@@ -515,7 +516,7 @@ void RingImager::ConstructDetector(void) {
     for (int DetectorIndex = 0; DetectorIndex < NbOfDetectors; DetectorIndex++) {
         DetectorSolid           = new G4Box("DtSd", fHLX, fHLY, fHLZ + fMarginRings * NbOfModulesZ);
         DetectorLV              = CreateLogicalVolume("DtLV", fTubeMaterial, DetectorSolid);
-        CollimatorDetectorSolid = fCollimatorExists ? new G4Box("CoDtSd", fHLX, fCollimatorHLY, fHLZ) : nullptr;
+        CollimatorDetectorSolid = fCollimatorExists ? new G4Box("CoDtSd", fHLX, fCollimatorHL, fHLZ) : nullptr;
         CollimatorDetectorLV =
             fCollimatorExists ? CreateLogicalVolume("CoDtLV", fCollimatorMaterial, CollimatorDetectorSolid) : nullptr;
         CollimatorDetectorPV = nullptr;
@@ -532,16 +533,16 @@ void RingImager::ConstructDetector(void) {
         RotMatrix->rotateX(0);
         RotMatrix->rotateY(0);
         RotMatrix->rotateZ(RotationAngle);
-        DetectorTransX                     = std::cos(Angle) * (fRingRadius + 2 * fCollimatorHLY + fHLY);
-        DetectorTransY                     = std::sin(Angle) * (fRingRadius + 2 * fCollimatorHLY + fHLY);
+        DetectorTransX                     = std::cos(Angle) * (fRingRadius + 2 * fCollimatorHL + fHLY);
+        DetectorTransY                     = std::sin(Angle) * (fRingRadius + 2 * fCollimatorHL + fHLY);
         G4ThreeVector* TransVectorDetector = new G4ThreeVector(DetectorTransX, DetectorTransY, 0);
         G4cout << "Detector ID " << DetectorIndex << G4endl;
         DetectorPV = CreatePhysicalVolume(
             "DtPV", DetectorIndex, true, DetectorLV, RotMatrix, TransVectorDetector, fEnvelopePhys);
         
         if (fCollimatorExists) {
-            CollimatorTransX                     = std::cos(Angle) * (fRingRadius + fCollimatorHLY);
-            CollimatorTransY                     = std::sin(Angle) * (fRingRadius + fCollimatorHLY);
+            CollimatorTransX                     = std::cos(Angle) * (fRingRadius + fCollimatorHL);
+            CollimatorTransY                     = std::sin(Angle) * (fRingRadius + fCollimatorHL);
             G4ThreeVector* TransVectorCollimator = new G4ThreeVector(CollimatorTransX, CollimatorTransY, 0);
             CollimatorDetectorPV                 = CreatePhysicalVolume(
                 "CoBxPV", DetectorIndex, true, CollimatorDetectorLV, RotMatrix, TransVectorCollimator, fEnvelopePhys);
@@ -645,6 +646,8 @@ void RingImager::ConstructCrystals(
                     collimatorID                         = crystalID;
                     G4ThreeVector* TransVectorCollimator = new G4ThreeVector(
                         TransVectorSubmodule->x() + crystalTransX, 0, TransVectorSubmodule->z() + crystalTransZ);
+                    G4cout<<"Crystal translation: "<<TransVectorCrystal->x()<<" "<<TransVectorCrystal->y()<<" "<<TransVectorCrystal->z()<<G4endl;
+                    G4cout<<"Collimator translation: "<<TransVectorCollimator->x()<<" "<<TransVectorCollimator->y()<<" "<<TransVectorCollimator->z()<<" "<<G4endl;
                     CreatePhysicalVolume(
                         "CoOpPV", collimatorID, true, CollimatorOpeningLV, 0, TransVectorCollimator, CollimatorPV);
                     assert(std::find(collimatorIDs.begin(), collimatorIDs.end(), collimatorID) == collimatorIDs.end());
@@ -703,9 +706,9 @@ void RingImager::SaveCrystalCoordinate(void) {
 }
 // Create the detector geometry in the simulation
 G4VPhysicalVolume* RingImager::Construct(void) {
-    // BeginConstruction();
-    // G4cerr << "Starting constructing " << fName << G4endl;
-    Imager::Construct();
+     BeginConstruction();
+     G4cout << "Starting constructing " << fName << G4endl;
+    Imager::CommonParameters();
     GetRingRadius();
     GetNbOfDetectors();
     GetMarginRings();
@@ -750,19 +753,22 @@ G4VPhysicalVolume* RingImager::Construct(void) {
     GetCrystalCoordinateSave();
 
     double maxNbDetectors = floor(M_PI / asin(fHLX / fRingRadius));
-
     G4VSolid* EmptyTubeSolid = new G4Tubs("TbSd",
         fRingRadius,
-        (fRingRadius + 2 * fHLY + 2 * fCollimatorHLY) / cos(M_PI / maxNbDetectors),
+        (fRingRadius + 2 * fHLY + 2 * fCollimatorHL) / cos(M_PI / maxNbDetectors),
         (fModuleHLZ + fModuleGapZ * 0.5 + fMarginRings) * NbOfModulesZ,
         0,
         2 * M_PI);
-
+    G4cout<<"fRingRadius "<<fRingRadius<<" fHLY "<<fHLY<<" fCollimatorHL "<<fCollimatorHL<<" fModuleHLZ "<<fModuleHLZ<<G4endl;
     fEnvelopeLog = CreateLogicalVolume(EmptyTubeSolid);
     ColorLV(1, 1, 1, fEnvelopeLog);
+    G4cout<<"SetCrystalCounter"<<G4endl;
 
     fEnvelopePhys = CreatePhysicalVolume(fEnvelopeLog);
+    G4cout<<"SetCrystalCounter"<<G4endl;
+
     SetCrystalCounter();
+    G4cout<<"SetCrystalCounter"<<G4endl;
     G4int NbOfModules    = NbOfModulesX * NbOfModulesY * NbOfModulesZ * NbOfDetectors;
     G4int NbOfSubmodules = NbOfSubmodulesX * NbOfSubmodulesY * NbOfSubmodulesZ * NbOfModules;
     G4int NbOfCrystals   = NbOfXBins * NbOfYBins * NbOfZBins * NbOfSubmodules;
@@ -770,16 +776,22 @@ G4VPhysicalVolume* RingImager::Construct(void) {
     CrystalSolid = new G4Box("CrSd", fCrystalHLX, fCrystalHLY, fCrystalHLZ);
     CrystalLV    = CreateLogicalVolume("CrLV", fCrystalMaterial, CrystalSolid);
     SetLogicalVolumeToBeSensitive(CrystalLV);
+    std::vector<G4LogicalVolume*> sensitive_volumes=GetLogicalVolumesToBeSensitive();
+    for(int ssss=0;ssss< sensitive_volumes.size();ssss++){
+        G4cout<<"sensitive volumes: "<< sensitive_volumes[ssss]->GetName()<<G4endl;
+
+    }
     ColorLV(G4Colour::Red(), CrystalLV);
     CollimatorOpeningSolid =
         fCollimatorExists
-            ? new G4Box("CoOpSd", Imager::GetCollimatorOpeningHLX(), fCollimatorHLY, Imager::GetCollimatorOpeningHLZ())
+            ? new G4Box("CoOpSd", Imager::GetCollimatorOpeningHLX(), fCollimatorHL, Imager::GetCollimatorOpeningHLZ())
             : nullptr;
     CollimatorOpeningLV =
         fCollimatorExists ? CreateLogicalVolume("CoOpLV", fCollimatorOpeningMaterial, CollimatorOpeningSolid) : nullptr;
 
     if (fCollimatorExists) {
-        ColorLV(1.0, 0.7529411, 0.796078, CollimatorOpeningLV);
+//        ColorLV(1.0, 0.7529411, 0.796078, CollimatorOpeningLV);
+        ColorLV(G4Colour::Blue(), CollimatorOpeningLV);
     }
 
     ConstructDetector();
