@@ -1,8 +1,8 @@
 #================ Flat-penel detector ================
 s:Ge/CBCTImager/Type     = "FlatImager"
-s:Ge/CBCTImager/Material = "Vacuum"
+s:Ge/CBCTImager/Material = "Nitrogen"
 s:Ge/CBCTImager/Parent   = "World"
-d:Ge/CBCTImager/TransZ   = -10 mm
+d:Ge/CBCTImager/TransZ   = -150 mm
 #d:Ge/CBCTImager/HLX      = Ge/CBCTImager/Crystal/SizeTotalGap mm * Ge/CBCTImager/Crystal/NbOfXBins
 #d:Ge/CBCTImager/HLY      = Ge/CBCTImager/Crystal/SizeTotalGap mm * Ge/CBCTImager/Crystal/NbOfYBins
 #d:Ge/CBCTImager/HLZ      = Ge/CBCTImager/TotalThickness mm
@@ -11,21 +11,21 @@ d:Ge/CBCTImager/TransZ   = -10 mm
 s:Ge/CBCTImager/Crystal/Material           = "CsI"
 s:Ge/CBCTImager/Crystal/Shape              = "Cylinder"
 d:Ge/CBCTImager/Crystal/HL                 = 180 um
-d:Ge/CBCTImager/Crystal/Radius             = 10.2 um
-d:Ge/CBCTImager/Crystal/ReflectorThickness = 1.2 um
+d:Ge/CBCTImager/Crystal/Radius             = 5.1 um
+d:Ge/CBCTImager/Crystal/ReflectorThickness = 0 um
 s:Ge/CBCTImager/Crystal/ReflectorMaterial  = "SiO2"
-i:Ge/CBCTImager/Crystal/NbOfXBins          = 77
-i:Ge/CBCTImager/Crystal/NbOfYBins          = 77
+i:Ge/CBCTImager/Crystal/NbOfXBins          = 715
+i:Ge/CBCTImager/Crystal/NbOfYBins          = 715
 i:Ge/CBCTImager/Crystal/NbOfZBins          = 1
-d:Ge/CBCTImager/Crystal/HXGap               = 1.8 um
-d:Ge/CBCTImager/Crystal/HYGap               = 1.8 um
+d:Ge/CBCTImager/Crystal/HXGap               = 0.9 um
+d:Ge/CBCTImager/Crystal/HYGap               = 0.9 um
 d:Ge/CBCTImager/Crystal/HZGap               = 0 mm
 d:Ge/CBCTImager/Crystal/SizeTotal          = Ge/CBCTImager/Crystal/Radius + Ge/CBCTImager/Crystal/ReflectorThickness mm
 d:Ge/CBCTImager/Crystal/SizeTotalGap       = Ge/CBCTImager/Crystal/SizeTotal + Ge/CBCTImager/Crystal/HXGap mm
 
 #================ Prefilter ================
 sv:Ge/CBCTImager/Prefilters/Materials   = 1 "Carbon"
-dv:Ge/CBCTImager/Prefilters/Thicknesses = 1 50 um
+dv:Ge/CBCTImager/Prefilters/Thicknesses = 1 100 um #100 um
 
 #================ Anti-scatter grid ================
 b:Ge/CBCTImager/Collimator/Exists                    = "False"
@@ -45,10 +45,10 @@ s:Ge/CBCTImager/PhotoDetector/Material  = "SiO2"
 s:Ge/ScitillatorBox/Type       = "TsBox"
 s:Ge/ScitillatorBox/Parent     = "World"
 d:Ge/ScitillatorBox/HLX        = Ge/CBCTImager/Crystal/SizeTotalGap mm * Ge/CBCTImager/Crystal/NbOfXBins
-d:Ge/ScitillatorBox/HLY        = Ge/CBCTImager/Crystal/SizeTotalGap mm * Ge/CBCTImager/Crystal/NbOfXBins
+d:Ge/ScitillatorBox/HLY        = Ge/CBCTImager/Crystal/SizeTotalGap mm * Ge/CBCTImager/Crystal/NbOfYBins
 d:Ge/ScitillatorBox/HLZ        = Ge/CBCTImager/Crystal/HL mm
-d:Ge/ScitillatorBox/Transz     = Ge/CBCTImager/TransZ + 155 um # ((Collimator/HL+Crystal/HL+PhotoDetector/HLZ)*2+Prefilters/Thickness)/2-(Collimator/HL*2+Prefilters/Thickness+Crystal/HL)
-s:Ge/ScitillatorBox/Color      = "Red"
+d:Ge/ScitillatorBox/TransZ     = Ge/CBCTImager/TransZ + 130 um # ((Collimator/HL+Crystal/HL+PhotoDetector/HLZ)*2+Prefilters/Thickness)/2-(Collimator/HL*2+Prefilters/Thickness+Crystal/HL)
+s:Ge/ScitillatorBox/Color      = "Green"
 b:Ge/ScitillatorBox/IsParallel = "True"
 
 s:Ge/PhotdetBox/Type       = "TsBox"
@@ -56,7 +56,7 @@ s:Ge/PhotdetBox/Parent     = "World"
 d:Ge/PhotdetBox/HLX        = Ge/ScitillatorBox/HLX mm
 d:Ge/PhotdetBox/HLY        = Ge/ScitillatorBox/HLY mm
 d:Ge/PhotdetBox/HLZ        = Ge/CBCTImager/PhotoDetector/HLZ mm
-d:Ge/PhotdetBox/Transz     = Ge/CBCTImager/TransZ - 205 um # ((Collimator/HL+Crystal/HL+PhotoDetector/HLZ)*2+Prefilters/Thickness)/2-(Collimator/HL*2+Prefilters/Thickness+Crystal/HL)
+d:Ge/PhotdetBox/TransZ     = Ge/CBCTImager/TransZ - 230 um # ((Collimator/HL+Crystal/HL+PhotoDetector/HLZ)*2+Prefilters/Thickness)/2-(Collimator/HL*2+Prefilters/Thickness+Crystal/HL)
 s:Ge/PhotdetBox/Color      = "Yellow"
 b:Ge/PhotdetBox/IsParallel = "True"
 
