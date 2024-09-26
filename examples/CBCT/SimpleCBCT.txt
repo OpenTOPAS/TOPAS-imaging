@@ -1,0 +1,83 @@
+includeFile= Phantom_SheppLogan.txt DetectorSimple.txt Source.txt
+
+s:Ge/World/Material = "Air"
+d:Ge/World/HLX      = 0.5 m
+d:Ge/World/HLY      = 0.5 m
+d:Ge/World/HLZ      = 1.0 m
+sc:Ge/World/Color   ="red"
+
+b:Ge/QuitIfOverlapDetected = "True"
+i:Ts/NumberOfThreads       = 8 # defaults to 1
+
+#s:Gr/View/Type                             ="OpenGL"
+#b:Ge/View/ShowAxis                         = "False"
+#b:Gr/View/IncludeAxes                      = "False" # defaults to "False"
+#s:Gr/View/AxesComponent                    = "World" # Component in which to center the axes. Defaults to World.
+#d:Gr/View/AxesSize                         = 20 cm # size of axes
+#i:Gr/View/WindowSizeX                      = 1024
+#i:Gr/View/WindowSizeY                      = 768
+#d:Gr/View/Theta                            = 90 deg
+#d:Ge/View/Phi                              = 0 deg
+#u:Gr/View/Zoom                             = 2
+#b:Gr/View/HiddenLineRemovalForTrajectories = "True"
+#s:Gr/View/ColorBy                          = "ParticleType"
+#sv:Gr/View/ColorByParticleTypeNames        = 2 "gamma" "opticalphoton"
+#sv:Gr/View/ColorByParticleTypeColors       = 2 "green" "yellow"
+#i:Gr/View/WindowPosX                       = 0
+#i:Gr/View/WindowPosY                       = 0
+#i:Gr/View/WindowPosZ                       = 1000
+
+i:Ts/SequenceVerbosity        = 1
+Ts/ShowHistoryCountAtInterval = 10000000
+
+#=============CONE BEAM===========
+d:Ge/BeamPosition/TransZ       = 1000 mm
+So/XRay/NumberOfHistoriesInRun = 1000000000
+i:Ts/Seed                      = -1386672781
+
+#============== Simple CBCT Scorer (Edep) ========
+s:Sc/CBCTscorer/Quantity                   = "EnergyDeposit"
+s:Sc/CBCTscorer/Component                  = "CBCTImager"
+s:Sc/CBCTscorer/OutputType                 = "binary"
+b:Sc/CBCTscorer/OutputToConsole            = "False"
+i:Sc/CBCTscorer/XBins                      = 512
+i:Sc/CBCTscorer/YBins                      = 512
+i:Sc/CBCTscorer/ZBins                      = 1
+s:Sc/CBCTscorer/IfOutputFileAlreadyExists  = "Overwrite"
+s:Sc/CBCTscorer/OutputFile                 = "CBCT_output/SimpleCBCT"
+
+#============== Simple CBCT Scorer (Edep) ========
+s:Sc/CBCTscorerSquare/Quantity                   = "SquareEnergyDeposit"
+s:Sc/CBCTscorerSquare/Component                  = "CBCTImager"
+s:Sc/CBCTscorerSquare/OutputType                 = "binary"
+b:Sc/CBCTscorerSquare/OutputToConsole            = "False"
+i:Sc/CBCTscorerSquare/XBins                      = 512
+i:Sc/CBCTscorerSquare/YBins                      = 512
+i:Sc/CBCTscorerSquare/ZBins                      = 1
+s:Sc/CBCTscorerSquare/IfOutputFileAlreadyExists  = "Overwrite"
+s:Sc/CBCTscorerSquare/OutputFile                 = "CBCT_output/SimpleCBCT_Square"
+
+#============== Simple CBCT Scorer scatter (Edep) ========
+s:Sc/CBCTscorerScatter/Quantity                   = "EnergyDeposit"
+s:Sc/CBCTscorerScatter/Component                  = "CBCTImager"
+s:Sc/CBCTscorerScatter/OutputType                 = "binary"
+b:Sc/CBCTscorerScatter/OutputToConsole            = "False"
+i:Sc/CBCTscorerScatter/XBins                      = 512
+i:Sc/CBCTscorerScatter/YBins                      = 512
+i:Sc/CBCTscorerScatter/ZBins                      = 1
+s:Sc/CBCTscorerScatter/IfOutputFileAlreadyExists  = "Overwrite"
+s:Sc/CBCTscorerScatter/OutputFile                 = "CBCT_output/SimpleCBCT_Scatter"
+sv:Sc/CBCTscorerScatter/OnlyIncludeIfParticleOrAncestorInteractedInComponentOrSubComponentsOf   = 1 "Phantom"
+
+
+#============== Simple CBCT Scorer primary (Edep) ========
+s:Sc/CBCTscorerPrimary/Quantity                   = "EnergyDeposit"
+s:Sc/CBCTscorerPrimary/Component                  = "CBCTImager"
+s:Sc/CBCTscorerPrimary/OutputType                 = "binary"
+b:Sc/CBCTscorerPrimary/OutputToConsole            = "False"
+i:Sc/CBCTscorerPrimary/XBins                      = 512
+i:Sc/CBCTscorerPrimary/YBins                      = 512
+i:Sc/CBCTscorerPrimary/ZBins                      = 1
+s:Sc/CBCTscorerPrimary/IfOutputFileAlreadyExists  = "Overwrite"
+s:Sc/CBCTscorerPrimary/OutputFile                 = "CBCT_output/SimpleCBCT_Primary"
+sv:Sc/CBCTscorerPrimary/OnlyIncludeIfParticleOrAncestorNotInteractedInComponentOrSubComponentsOf   = 1 "Phantom"

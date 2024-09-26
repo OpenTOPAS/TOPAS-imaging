@@ -1,0 +1,26 @@
+# CsI definition
+sv:Ma/CsI/Components          = 2 "G4_Cs" "G4_I"
+d:Ma/CsI/Density              = 4.51 g/cm3
+d:Ma/CsI/MeanExcitationEnergy = 553.1 eV
+uv:Ma/CsI/Fractions           = 2 0.511549 0.488451
+s:El/G4_Cs/Symbol             = "Cs"
+s:El/G4_I/Symbol              = "I"
+s:Ma/CsI/DefaultColor         = "pink"
+
+# CsI definition
+sv:Ma/CdTe/Components          = 2 "G4_Cd" "G4_Te"
+d:Ma/CdTe/Density              = 6.2 g/cm3
+d:Ma/CdTe/MeanExcitationEnergy = 539.3 eV
+uv:Ma/CdTe/Fractions           = 2 0.468358 0.531642
+s:El/G4_Cd/Symbol              = "Cd"
+s:El/G4_Te/Symbol              = "Te"
+s:Ma/CdTe/DefaultColor         = "yellow"
+
+#================ Flat-penel detector ================
+s:Ge/CBCTImager/Type     = "TsBox"
+s:Ge/CBCTImager/Material = "CsI"
+s:Ge/CBCTImager/Parent   = "World"
+d:Ge/CBCTImager/TransZ   = -500 mm
+d:Ge/CBCTImager/HLX      = 400 mm
+d:Ge/CBCTImager/HLY      = 400 mm
+d:Ge/CBCTImager/HLZ      = 10 mm
