@@ -37,16 +37,15 @@ void Imager::ColorLV(G4double r, G4double g, G4double b, G4LogicalVolume* LV) {
     ColorLV(G4Colour(r, g, b), LV);
 }
 
-G4bool Imager::IsCollimatorExists(void) {
+void Imager::IsCollimatorExists(void) {
     fCollimatorExists = fPm->ParameterExists(GetFullParmName("Collimator/Exists"))
-                            ? fPm->GetBooleanParameter(GetFullParmName("Collimator/Exists"))
-                            : false;
+                            ? fPm->GetBooleanParameter(GetFullParmName("Collimator/Exists")): false;    
 }
 
 void Imager::GetNbOfXBins(void) {
     NbOfXBins = fPm->GetIntegerParameter(GetFullParmName("Crystal/NbOfXBins"));
     if (NbOfXBins <= 0) {
-        G4cout << "Error: Crystal/NbOfXBins should be a positive integer, see: " << GetFullParmName("Crystal/NbOfXBins")
+        G4cerr << "Error: Crystal/NbOfXBins should be a positive integer, see: " << GetFullParmName("Crystal/NbOfXBins")
                << G4endl;
         exit(1);
     }
@@ -58,7 +57,7 @@ void Imager::GetNbOfYBins(void) {
                     : 1;
 
     if (NbOfYBins <= 0) {
-        G4cout << "Error: Crystal/NbOfYBins should be a positive integer, see: " << GetFullParmName("Crystal/NbOfYBins")
+        G4cerr << "Error: Crystal/NbOfYBins should be a positive integer, see: " << GetFullParmName("Crystal/NbOfYBins")
                << G4endl;
         exit(1);
     }
@@ -67,7 +66,7 @@ void Imager::GetNbOfYBins(void) {
 void Imager::GetNbOfZBins(void) {
     NbOfZBins = fPm->GetIntegerParameter(GetFullParmName("Crystal/NbOfZBins"));
     if (NbOfZBins <= 0) {
-        G4cout << "Error: Crystal/NbOfZBins should be a positive integer, see: " << GetFullParmName("Crystal/NbOfZBins")
+        G4cerr << "Error: Crystal/NbOfZBins should be a positive integer, see: " << GetFullParmName("Crystal/NbOfZBins")
                << G4endl;
         exit(1);
     }
@@ -75,18 +74,23 @@ void Imager::GetNbOfZBins(void) {
 
 G4double Imager::GetCollimatorOpeningHLX(void) {
     assert(fCollimatorExists);
-    return (1 - fPm->IGetUnitlessParameter(GetFullParmName("Collimator/XSeptaThicknessPercentage"))) * fHLX / NbOfXBins;
+    return (1 - fPm->IGetUnitlessParameter(GetFullParmName("Collimator/XSeptaThicknessPercentage"))) *fCrystalHLX;//* fHLX / NbOfXBins;
+}
+
+G4double Imager::GetCollimatorOpeningHLY(void) {
+    assert(fCollimatorExists);
+    return (1 - fPm->IGetUnitlessParameter(GetFullParmName("Collimator/YSeptaThicknessPercentage"))) *fCrystalHLY;//* fHLX / NbOfXBins;
 }
 
 G4double Imager::GetCollimatorOpeningHLZ(void) {
     assert(fCollimatorExists);
-    return (1 - fPm->IGetUnitlessParameter(GetFullParmName("Collimator/ZSeptaThicknessPercentage"))) * fHLZ / NbOfZBins;
+    return (1 - fPm->IGetUnitlessParameter(GetFullParmName("Collimator/ZSeptaThicknessPercentage"))) *fCrystalHLZ;//* fHLZ / NbOfZBins;
 }
 
 G4double Imager::GetCrystalGapHLX(void) {
     if (NbOfXBins == 1) {
         if (std::abs(fHLX - fCrystalHLX) > eps) {
-            G4cout << "Error: if the number of XBins is 1 then HLX should be equal "
+            G4cerr << "Error: if the number of XBins is 1 then HLX should be equal "
                       "to Crystal/HLX, see: "
                    << GetFullParmName("HLX") << " and " << GetFullParmName("Crystal/HLX") << G4endl;
             exit(1);
@@ -94,7 +98,7 @@ G4double Imager::GetCrystalGapHLX(void) {
         return 0;
     }
     if (fCrystalHLX * NbOfXBins > fHLX) {
-        G4cout << "Error: Crystal/HLX * Crystal/NbOfXBins should be smaller than HLX, see: "
+        G4cerr << "Error: Crystal/HLX * Crystal/NbOfXBins should be smaller than HLX, see: "
                << GetFullParmName("Crystal/NbOfXBins") << ", " << GetFullParmName("HLX") << " and "
                << GetFullParmName("Crystal/HLX") << G4endl;
         exit(1);
@@ -105,7 +109,7 @@ G4double Imager::GetCrystalGapHLX(void) {
 G4double Imager::GetCrystalGapHLZ(void) {
     if (NbOfZBins == 1) {
         if (std::abs(fHLZ - fCrystalHLZ) > eps) {
-            G4cout << "Error: if the number of ZBins is 1 then HLZ should be equal "
+            G4cerr << "Error: if the number of ZBins is 1 then HLZ should be equal "
                       "to Crystal/HLZ, see: "
                    << GetFullParmName("HLZ") << " and " << GetFullParmName("Crystal/HLZ") << G4endl;
             exit(1);
@@ -113,7 +117,7 @@ G4double Imager::GetCrystalGapHLZ(void) {
         return 0;
     }
     if (fCrystalHLZ * NbOfZBins > fHLZ) {
-        G4cout << "Error: Crystal/HLZ * Crystal/NbOfZBins should be smaller than HLZ, see: "
+        G4cerr << "Error: Crystal/HLZ * Crystal/NbOfZBins should be smaller than HLZ, see: "
                << GetFullParmName("Crystal/NbOfZBins") << ", " << GetFullParmName("HLZ") << " and "
                << GetFullParmName("Crystal/HLZ") << G4endl;
         exit(1);
@@ -141,12 +145,17 @@ void Imager::GetCrystalShape(void) {
     fCrystalShape = fPm->ParameterExists(GetFullParmName("Crystal/Shape"))
                         ? fPm->GetStringParameter(GetFullParmName("Crystal/Shape"))
                         : "Box";
+    
 }
 void Imager::GetCrystalRadius(void) {
     fCrystalRadius = fPm->GetDoubleParameter(GetFullParmName("Crystal/Radius"), "Length");
+    fCrystalHLX=fCrystalRadius;
+    fCrystalHLY=fCrystalRadius;
 }
 void Imager::GetCrystalHL(void) {
     fCrystalHL = fPm->GetDoubleParameter(GetFullParmName("Crystal/HL"), "Length");
+    fCrystalHLZ          = fCrystalHL;
+
 }
 void Imager::GetCrystalHLX(void) {
     fCrystalHLX = fPm->GetDoubleParameter(GetFullParmName("Crystal/HLX"), "Length");
@@ -161,7 +170,7 @@ void Imager::GetCrystalHLZ(void) {
 }
 
 void Imager::GetCollimatorHLY(void) {
-    fCollimatorHLY = fCollimatorExists ? fPm->GetDoubleParameter(GetFullParmName("Collimator/HL"), "Length") * 0.5 : 0;
+    fCollimatorHL = fCollimatorExists ? fPm->GetDoubleParameter(GetFullParmName("Collimator/HL"), "Length") : 0;
 }
 
 void Imager::GetCollimatorOpeningMaterial(void) {
@@ -183,25 +192,23 @@ void Imager::GetCollimatorMaterial(void) {
 void Imager::GetCrystalMaterial(void) {
     fCrystalMaterial = fPm->GetStringParameter(GetFullParmName("Crystal/Material"));
 }
-G4VPhysicalVolume* Imager::Construct(void) {
-    BeginConstruction();
-    G4cerr << "Starting constructing " << fName << G4endl;
-    // GetDetectorType();
+G4VPhysicalVolume* Imager::Construct(void) {}
+
+void Imager::CommonParameters(void) {
+    G4cerr << "Start constructing " << fName << G4endl;
     GetCrystalShape();
-    if (fCrystalShape == "Box") {
+    if (fCrystalShape=="Box") {
         GetCrystalHLX();
         GetCrystalHLY();
         GetCrystalHLZ();
-    } else if (fCrystalShape == "Cylinder") {
+    } else if (fCrystalShape=="Cylinder") {
         GetCrystalRadius();
         GetCrystalHL();
     } else {
-        G4cerr << "Not supported crystal shape" << G4endl;
+        G4cerr << "Not supported crystal shape: "<<fCrystalShape << G4endl;
         throw std::runtime_error("Not supported crystal shape");
     }
-    // GetHLX();
-    // GetHLY();
-    // GetHLZ();
+
     GetMaterial();
     GetNbOfXBins();
     GetNbOfYBins();
@@ -212,14 +219,15 @@ G4VPhysicalVolume* Imager::Construct(void) {
     GetCollimatorMaterial();
     GetCollimatorOpeningMaterial();
     GetCrystalMaterial();
-    if (fPm->ParameterExists(GetFullParmName("CheckForOverlapsResolution")))
+
+    if (fPm->ParameterExists(GetFullParmName("CheckForOverlapsResolution"))){
         resolution = fPm->GetIntegerParameter(GetFullParmName("CheckForOverlapsResolution"));
-    else
+    }else{
         resolution = fPm->GetIntegerParameter("Ge/CheckForOverlapsResolution");
-
-    if (fPm->ParameterExists(GetFullParmName("CheckForOverlapsTolerance")))
+    }
+    if (fPm->ParameterExists(GetFullParmName("CheckForOverlapsTolerance"))){
         tolerance = fPm->GetDoubleParameter(GetFullParmName("CheckForOverlapsTolerance"), "Length");
-    else
+    }else{
         tolerance = fPm->GetDoubleParameter("Ge/CheckForOverlapsTolerance", "Length");
-
+    }
 }
