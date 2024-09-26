@@ -27,6 +27,7 @@ public:
         TsVGeometryComponent* parentComponent, G4VPhysicalVolume* parentVolume, G4String& name);
     ~Imager();
     G4VPhysicalVolume* Construct();
+    void CommonParameters();
 
 protected:
     // Imager type can be either "SPECT", "PET", "PG", "CBCT"
@@ -45,6 +46,9 @@ protected:
     G4double fCrystalHLZ;
     G4double fCrystalRadius;
     G4double fCrystalHL;
+    G4double fCrystalGapX;
+    G4double fCrystalGapY;
+    G4double fCrystalGapZ;
     G4int    NbOfDetectors;
     G4int    NbOfXBins;
     G4int    NbOfYBins;
@@ -52,7 +56,7 @@ protected:
 
     // Collimator Parameters
     G4bool   fCollimatorExists;
-    G4double fCollimatorHLY;
+    G4double fCollimatorHL;
     G4String fCollimatorOpeningMaterial;
     G4String fCollimatorMaterial;
 
@@ -70,7 +74,7 @@ protected:
     // Ad-Hoc
     void   ColorLV(G4double, G4double, G4double, G4LogicalVolume*);
     void   ColorLV(G4Colour, G4LogicalVolume*);
-    G4bool IsCollimatorExists(void);
+    void   IsCollimatorExists(void);
 
     // Functions for Imager Parameters
 
@@ -93,6 +97,7 @@ protected:
 
     // Functions for SPECT Parameters
     G4double GetCollimatorOpeningHLX(void);
+    G4double GetCollimatorOpeningHLY(void);
     G4double GetCollimatorOpeningHLZ(void);
     void     GetCollimatorHLY(void);
 
