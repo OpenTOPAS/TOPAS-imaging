@@ -1,0 +1,14 @@
+includeFile = HUtoMaterialSchneider.txt
+
+s:Ge/Patient/Parent               = "World"
+s:Ge/Patient/Material             = "G4_WATER"
+d:Ge/Patient/TransX               = 0. cm
+d:Ge/Patient/TransY               = 0. cm
+d:Ge/Patient/TransZ               = 0. m
+d:Ge/Patient/RotX                 = 90. deg
+d:Ge/Patient/RotY                 = 0. deg
+d:Ge/Patient/RotZ                 = 0. deg
+s:Ge/Patient/Type                 = "TsDicomPatient"
+s:Ge/Patient/DicomDirectory       = "synthetic_lung/lung-1"
+
+#iv:Ge/Patient/ShowSpecificSlicesY = 1 -1
