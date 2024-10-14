@@ -5,7 +5,8 @@ This directory contains 3 examples of TOPAS-imaging extension
 
 - Main.txt uses CBCTScorer, which scores optical photons.
 - Optical Spread Function can be enabled for variance reduction.
-- OSF.tar.gz should be unzipped to enable the varince reduction technique.
+- OSF.tar.gz must be unzipped to enable the varince reduction technique.
+- The ./CBCT_output/ directory must be created by the user using the mkdir command
 
 - SimpleCBCT.txt and SimpleCBCT_PCD.txt score energy deposition of photon on the flat-panel detector.
 - SimpleCBCT_PCD.txt models a photon-counting detector using the energy binning feature of OpenTOPAS.
@@ -15,6 +16,7 @@ This directory contains 3 examples of TOPAS-imaging extension
 2. OSF
 - This example builds a geometry, scorers, optical materials, and a detector to obtain OSF.
 - The example will save OSF of mono-energetic X-ray.
+- The ./OSF_CBCT_results/ directory must be created by the user using the mkdir command
 
 3. PET
 - This example builts the ACR-type phantom, a ring-shaped detector.

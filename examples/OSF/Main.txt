@@ -1,5 +1,5 @@
-includeFile = ../materials.txt
-includeFile = ../detector.txt ../source.txt ../scorer.txt
+includeFile = ./materials.txt
+includeFile = ./detector.txt ./source.txt ./scorer.txt
 
 d:Ge/World/HLX = 20 cm # Half Length
 d:Ge/World/HLY = 20 cm
@@ -35,9 +35,9 @@ i:Ts/ShowHistoryCountAtInterval = 1000000 # How often to print history count to 
 d:Ge/BeamPosition/TransZ = 0 mm # + Ge/BeamPosition/DisplaceZ
 i:Ts/NumberOfThreads     = 4 # defaults to 1
 
-s:Sc/ScntillatorEdep/OutputFile = "../OSF_CBCT_results/deposit_scintillator_100keV"
-s:Sc/PhotdetEdep/OutputFile     = "../OSF_CBCT_results/optical_photon_count_100keV"
-s:Sc/PhotdetEdep2/OutputFile    = "../OSF_CBCT_results/optical_photon_count_std_100keV"
+s:Sc/ScntillatorEdep/OutputFile = "./OSF_CBCT_results/deposit_scintillator_100keV"
+s:Sc/PhotdetEdep/OutputFile     = "./OSF_CBCT_results/optical_photon_count_100keV"
+s:Sc/PhotdetEdep2/OutputFile    = "./OSF_CBCT_results/optical_photon_count_std_100keV"
 
 d:So/XRay/BeamEnergy     = 100.0 keV
 i:Ts/Seed                = 1 # default is 1
