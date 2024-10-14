@@ -1,0 +1,11 @@
+#================ Flat-penel detector ================
+s:Ge/CBCTImager/Type     = "TsBox"
+s:Ge/CBCTImager/Material = "Air"
+s:Ge/CBCTImager/Parent   = "World"
+d:Ge/CBCTImager/TransZ   = -500 mm
+d:Ge/CBCTImager/HLX      = 199.68 mm
+d:Ge/CBCTImager/HLY      = 199.68 mm
+d:Ge/CBCTImager/HLZ      = 1 mm
+i:Ge/CBCTImager/XBins    = 512
+i:Ge/CBCTImager/YBins    = 512
+i:Ge/CBCTImager/ZBins    = 1

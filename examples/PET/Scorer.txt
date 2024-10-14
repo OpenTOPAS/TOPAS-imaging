@@ -1,0 +1,29 @@
+
+# This parameter is required for all TOPAS geometry components, but does nothing here
+#=========Scorer===========
+s:Sc/PETScore/Component                                   = "PETImager"
+s:Sc/PETScore/Quantity                                    = "PETScorer"
+sv:Sc/PETScore/OnlyIncludeParticlesNamed                  = 1 "e-"
+sv:Sc/PETScore/OnlyIncludeIfParticleOrAncestorFromProcess = 1 "annihil"
+
+#========= Parameters for digitizers ===========
+sv:Sc/PETScore/Digitizers                              = 3 "EnergyCutoff" "TimeResolution" "DeadTime"
+d:Sc/PETScore/Digitizer/TimeResolution                 = 500 ps # Time resolution
+d:Sc/PETScore/Digitizer/DeadTime                       = 10. ms # Dead time
+d:Sc/PETScore/Digitizer/EnergyCutoff/Threshold         = 400 keV # Energy cutoff
+d:Sc/PETScore/Digitizer/EnergyCutoff/Uphold            = 650 keV # Energy cutoff
+d:Sc/PETScore/Digitizer/SigmoidalThresholder/Threshold = 650 keV # Energy cutoff
+u:Sc/PETScore/Digitizer/SigmoidalThresholder/Alpha     = 50. 
+u:Sc/PETScore/Digitizer/SigmoidalThresholder/Percent   = 0.9
+d:Sc/PETScore/Digitizer/PulsePileUp/TimingWindow       = 100 ns
+
+d:Sc/PETScore/MinDistanceInCoincidence     = 1 mm
+d:Sc/PETScore/CoincidenceTimeWindowPrompts = 10 ns # Coincidence detection
+d:Sc/PETScore/CoincidenceTimeWindowRandoms = Sc/PETScore/CoincidenceTimeWindowPrompts ns
+d:Sc/PETScore/CoincidenceTimeDelayRandoms  = 1000 ns
+
+# Output options for phase space
+
+s:Sc/PETScore/IfOutputFileAlreadyExists = "Overwrite" # re-write
+s:Sc/PETScore/OutputType                = "ASCII"
+

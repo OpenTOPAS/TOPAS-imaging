@@ -1,0 +1,46 @@
+includeFile= Materials.txt Detector_OSF.txt Source.txt Scoring_OSF.txt Phantom_SheppLogan.txt
+#sv:Ph/Default/Modules = 1 "g4em-standard_opt2" # "g4optical"
+#d:Ph/Default/CutForAllParticles = 200 um
+
+s:Ge/World/Material = "Air"
+d:Ge/World/HLX      = 0.5 m
+d:Ge/World/HLY      = 0.5 m
+d:Ge/World/HLZ      = 1.0 m
+sc:Ge/World/Color   ="red"
+
+b:Ge/QuitIfOverlapDetected = "True"
+i:Ts/NumberOfThreads       = 8 # defaults to 1
+
+#s:Gr/View/Type                             ="OpenGL"
+#b:Ge/View/ShowAxis                         = "False"
+#b:Gr/View/IncludeAxes                      = "False" # defaults to "False"
+#s:Gr/View/AxesComponent                    = "World" # Component in which to center the axes. Defaults to World.
+#d:Gr/View/AxesSize                         = 20 cm # size of axes
+#i:Gr/View/WindowSizeX                      = 1024
+#i:Gr/View/WindowSizeY                      = 768
+#d:Gr/View/Theta                            = 90 deg
+###d:Ge/View/Phi                              = 0 deg
+#u:Gr/View/Zoom                             = 2
+#b:Gr/View/HiddenLineRemovalForTrajectories = "True"
+#s:Gr/View/ColorBy                          = "ParticleType"
+#sv:Gr/View/ColorByParticleTypeNames        = 2 "gamma" "opticalphoton"
+#sv:Gr/View/ColorByParticleTypeColors       = 2 "green" "yellow"
+#i:Gr/View/WindowPosX                       = 0
+#i:Gr/View/WindowPosY                       = 0
+#i:Gr/View/WindowPosZ                       = 1000
+#Ts/UseQT="True"
+
+i:Ts/SequenceVerbosity        = 1
+Ts/ShowHistoryCountAtInterval = 100000000
+
+#=============CONE BEAM===========
+d:Ge/BeamPosition/TransZ             = 1000 mm
+i:So/XRay/NumberOfHistoriesInRun     = 1000000000
+i:Ts/Seed                            = 1386672781
+s:Sc/CBCTscorer/OutputFile           = "CBCT_output/CBCT_OSF"
+s:Sc/CBCTScorerSquare/OutputFile     = "CBCT_output/CBCT_OSFSquare"
+s:Sc/CBCTScorerCount/OutputFile      = "CBCT_output/CBCT_OSFCount"
+b:Sc/CBCTscorer/ForceInteraction     = "False"
+i:Ts/TrackingVerbosity               = 0 # Set to larger integer to see details of tracking
+i:Sc/Verbosity                       = 0
+i:Tf/NumberOfSequentialTimes         = 10 # defaults to 1

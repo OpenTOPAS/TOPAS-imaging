@@ -1,0 +1,44 @@
+includeFile = Materials.txt NeuroPETDetector.txt Activities.txt Sources.txt Phantom_ACR.txt Scorer.txt
+
+i:Ts/NumberOfThreads = 4 # defaults to 1
+
+s:Ge/World/Type     = "TsBox"
+s:Ge/World/Material = "Air"
+d:Ge/World/HLX      = 2. m # Half Length
+d:Ge/World/HLY      = 2. m
+d:Ge/World/HLZ      = 2. m
+
+ic:So/VolSource_background/NumberOfHistoriesInRun    = Tf/NumDecays_background/Value
+ic:So/VolSource_hot_0/NumberOfHistoriesInRun         = Tf/NumDecays_hot_0/Value
+ic:So/VolSource_hot_1/NumberOfHistoriesInRun         = Tf/NumDecays_hot_1/Value
+ic:So/VolSource_hot_2/NumberOfHistoriesInRun         = Tf/NumDecays_hot_2/Value
+ic:So/VolSource_hot_3/NumberOfHistoriesInRun         = Tf/NumDecays_hot_3/Value
+
+s:Sc/PETScore/OutputFile             = "/lustre1/g/diara_hlee/TOPAS-imaging/PET/acr_neuropet"
+d:Sc/PETScore/ArtificialOffsetWindow = 0.9 s
+d:Tf/TimelineStart                   = 0 s # defaults to zero
+d:Tf/TimelineEnd                     = 15 s # must be larger than TimelineStart
+i:Tf/NumberOfSequentialTimes         = 15 # defaults to 1
+i:Ts/Seed                            = 1 # default is 1
+Ts/ShowHistoryCountAtInterval        = 10000000
+
+Ge/CheckForOverlaps = "True"
+b:Ge/CheckInsideEnvelopesForOverlaps = "False"
+
+#s:Gr/MyOGL/Type                             = "OpenGL"
+#i:Gr/MyOGL/WindowSizeX                      = 600
+#i:Gr/MyOGL/WindowSizeY                      = 600
+#i:Gr/MyOGL/WindowPosX                       = 0
+#i:Gr/MyOGL/WindowPosY                       = 0
+#u:Gr/MyOGL/Zoom                             = 10.
+#d:Gr/MyOGL/Theta                            = 90. deg
+#d:Gr/MyOGL/Phi                              = 90. deg
+#b:Gr/MyOGL/IncludeGeometry                  = "t"
+#b:Gr/MyOGL/IncludeTrajectories              = "t"
+#b:Gr/MyOGL/HiddenLineRemovalForGeometry     = "f"
+#b:Gr/MyOGL/HiddenLineRemovalForTrajectories = "f"
+#Ts/UseQt                                    = "True"
+##b:Gr/MyOGL/IncludeAxes                     = "True" # defaults to "False"
+#d:Gr/MyOGL/AxesSize                         = 500. mm # size of axes
+#Ge/CheckForOverlaps                         = "False"
+#b:Ge/CheckInsideEnvelopesForOverlaps        = "True"

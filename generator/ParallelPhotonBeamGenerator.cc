@@ -18,77 +18,74 @@
 //#include <CLHEP/Units/PhysicalConstants.h>
 #include <cmath>
 
-ParallelPhotonBeamGenerator::ParallelPhotonBeamGenerator(
-    TsParameterManager *pM, TsGeometryManager *gM, TsGeneratorManager *pgM,
-    G4String sourceName)
-    : TsVGenerator(pM, gM, pgM, sourceName) {
-  ResolveParameters();
+ParallelPhotonBeamGenerator::ParallelPhotonBeamGenerator(TsParameterManager *pM, TsGeometryManager *gM,
+                                                         TsGeneratorManager *pgM,
+                                                         G4String sourceName) : TsVGenerator(pM, gM, pgM, sourceName) {
+    ResolveParameters();
 }
 
 void ParallelPhotonBeamGenerator::ResolveParameters() {
-  TsVGenerator::ResolveParameters();
-
-  fAngleError = fPm->GetDoubleParameter(GetFullParmName("AngleError"), "Angle");
-  fMeanPositronRange =
-      fPm->GetDoubleParameter(GetFullParmName("MeanPositronRange"), "Length");
+    TsVGenerator::ResolveParameters();
+    fAngleError = fPm->GetDoubleParameter(GetFullParmName("AngleError"), "Angle");
+    fMeanPositronRange = fPm->GetDoubleParameter(GetFullParmName("MeanPositronRange"), "Length");
 }
 
 // Creates a random unit vector error radians from the input vector
 G4ThreeVector GetErrorVector(G4ThreeVector v, G4double error) {
-  G4double deltaMag = tan(error);
-  G4ThreeVector deltaVec = G4PlaneVectorRand(v).unit() * deltaMag;
-  G4ThreeVector newDirection = (v + deltaVec).unit();
+    G4double deltaMag = tan(error);
+    G4ThreeVector deltaVec = G4PlaneVectorRand(v).unit() * deltaMag;
+    G4ThreeVector newDirection = (v + deltaVec).unit();
 
-  return newDirection;
+    return newDirection;
 }
 
 void ParallelPhotonBeamGenerator::GeneratePrimaries(G4Event *anEvent) {
-  if (CurrentSourceHasGeneratedEnough())
-    return;
+    if (CurrentSourceHasGeneratedEnough())
+        return;
 
-  G4Point3D *componentPosition = fComponent->GetTransRelToWorld();
+    G4Point3D *componentPosition = fComponent->GetTransRelToWorld();
 
-  // randomize starting positions based on mean positron range
-  G4ThreeVector position =
-      G4ThreeVector(componentPosition->x(), componentPosition->y(),
-                    componentPosition->z()) +
-      G4RandomDirection() * fMeanPositronRange;
-      //+ G4UniformRand()*150*mm*G4ThreeVector(1,1,1).unit();//line source
+    // randomize starting positions based on mean positron range
+    G4ThreeVector position =
+            G4ThreeVector(componentPosition->x(), componentPosition->y(),
+                          componentPosition->z()) +
+            G4RandomDirection() * fMeanPositronRange;
+    //+ G4UniformRand()*150*mm*G4ThreeVector(1,1,1).unit();//line source
 
-  // direction of first photon
-  G4ThreeVector firstDirection = G4RandomDirection();
-  G4ThreeVector secondDirection = GetErrorVector(-firstDirection, fAngleError);
+    // direction of first photon
+    G4ThreeVector firstDirection = G4RandomDirection();
+    G4ThreeVector secondDirection = GetErrorVector(-firstDirection, fAngleError);
 
-  // we define the direction of p1 and then base p2 off of that
-  TsPrimaryParticle p1 = {.posX = (G4float)position.x(),
-                          .posY = (G4float)position.y(),
-                          .posZ = (G4float)position.z(),
-                          .dCos1 = (G4float)firstDirection.x(),
-                          .dCos2 = (G4float)firstDirection.y(),
-                          .dCos3 = (G4float)firstDirection.z(),
-                          .kEnergy = (G4float)fEnergy,
-                          .weight = 1.,
-                          .particleDefinition = fParticleDefinition,
-                          .isNewHistory = true,
-                          .isOpticalPhoton = fIsOpticalPhoton,
-                          .isGenericIon = fIsGenericIon,
-                          .ionCharge = fIonCharge};
-  TsPrimaryParticle p2 = {.posX = (G4float)position.x(),
-                          .posY = (G4float)position.y(),
-                          .posZ = (G4float)position.z(),
-                          .dCos1 = (G4float)secondDirection.x(),
-                          .dCos2 = (G4float)secondDirection.y(),
-                          .dCos3 = (G4float)secondDirection.z(),
-                          .kEnergy = (G4float)fEnergy,
-                          .weight = 1.,
-                          .particleDefinition = fParticleDefinition,
-                          .isNewHistory = false,
-                          .isOpticalPhoton = fIsOpticalPhoton,
-                          .isGenericIon = fIsGenericIon,
-                          .ionCharge = fIonCharge};
+    // we define the direction of p1 and then base p2 off of that
+    TsPrimaryParticle p1 = {.posX = (G4float) position.x(),
+            .posY = (G4float) position.y(),
+            .posZ = (G4float) position.z(),
+            .dCos1 = (G4float) firstDirection.x(),
+            .dCos2 = (G4float) firstDirection.y(),
+            .dCos3 = (G4float) firstDirection.z(),
+            .kEnergy = (G4float) fEnergy,
+            .weight = 1.,
+            .particleDefinition = fParticleDefinition,
+            .isNewHistory = true,
+            .isOpticalPhoton = fIsOpticalPhoton,
+            .isGenericIon = fIsGenericIon,
+            .ionCharge = fIonCharge};
+    TsPrimaryParticle p2 = {.posX = (G4float) position.x(),
+            .posY = (G4float) position.y(),
+            .posZ = (G4float) position.z(),
+            .dCos1 = (G4float) secondDirection.x(),
+            .dCos2 = (G4float) secondDirection.y(),
+            .dCos3 = (G4float) secondDirection.z(),
+            .kEnergy = (G4float) fEnergy,
+            .weight = 1.,
+            .particleDefinition = fParticleDefinition,
+            .isNewHistory = false,
+            .isOpticalPhoton = fIsOpticalPhoton,
+            .isGenericIon = fIsGenericIon,
+            .ionCharge = fIonCharge};
 
-  GenerateOnePrimary(anEvent, p1);
-  GenerateOnePrimary(anEvent, p2);
+    GenerateOnePrimary(anEvent, p1);
+    GenerateOnePrimary(anEvent, p2);
 
-  AddPrimariesToEvent(anEvent);
+    AddPrimariesToEvent(anEvent);
 }
