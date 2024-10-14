@@ -10,15 +10,15 @@ This directory contains 3 examples of TOPAS-imaging extension
 
 - SimpleCBCT_PCD.txt models a photon-counting detector using the energy binning feature of OpenTOPAS.
 
-- The examples will save projection data of the Shepp-Logan phantom.
+- Examples will save projection data of the Shepp-Logan phantom.
 
 2. OSF
 - This example builds a geometry, scorers, optical materials, and a detector to obtain OSF.
-
+- The example will save OSF of mono-energetic X-ray.
 
 3. PET
 - This example builts the ACR-type phantom, a ring-shaped detector.
 - Main.txt and PETSystem_example.txt build a CylindricalPET system.
 - NeuroPETSystem.txt build a NeuroPET system.
-- The example saves a phase space file (.phsp and .header) containing a list of coincident photons.
+- Examples will save phase space files (.phsp and .header) containing a list of coincident photons.
 
