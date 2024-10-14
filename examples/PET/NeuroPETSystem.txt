@@ -14,7 +14,7 @@ ic:So/VolSource_hot_1/NumberOfHistoriesInRun         = Tf/NumDecays_hot_1/Value
 ic:So/VolSource_hot_2/NumberOfHistoriesInRun         = Tf/NumDecays_hot_2/Value
 ic:So/VolSource_hot_3/NumberOfHistoriesInRun         = Tf/NumDecays_hot_3/Value
 
-s:Sc/PETScore/OutputFile             = "/lustre1/g/diara_hlee/TOPAS-imaging/PET/acr_neuropet"
+s:Sc/PETScore/OutputFile             = "./acr_neuropet"
 d:Sc/PETScore/ArtificialOffsetWindow = 0.9 s
 d:Tf/TimelineStart                   = 0 s # defaults to zero
 d:Tf/TimelineEnd                     = 15 s # must be larger than TimelineStart
