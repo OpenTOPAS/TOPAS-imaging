@@ -14,7 +14,7 @@ ic:So/VolSource_hot_1/NumberOfHistoriesInRun         = Tf/NumDecays_hot_1/Value
 ic:So/VolSource_hot_2/NumberOfHistoriesInRun         = Tf/NumDecays_hot_2/Value
 ic:So/VolSource_hot_3/NumberOfHistoriesInRun         = Tf/NumDecays_hot_3/Value
 
-s:Sc/PETScore/OutputFile             = "./acr_ge"
+s:Sc/PETScore/OutputFile             = "./acr_example"
 d:Tf/TimelineStart                   = 0 s # defaults to zero
 d:Tf/TimelineEnd                     = 60 s # must be larger than TimelineStart
 i:Tf/NumberOfSequentialTimes         = 60 # defaults to 1
