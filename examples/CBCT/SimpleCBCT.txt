@@ -46,17 +46,6 @@ i:Sc/CBCTscorer/ZBins                      = 1
 s:Sc/CBCTscorer/IfOutputFileAlreadyExists  = "Overwrite"
 s:Sc/CBCTscorer/OutputFile                 = "CBCT_output/SimpleCBCT"
 
-#============== Simple CBCT Scorer (Edep) ========
-s:Sc/CBCTscorerSquare/Quantity                   = "SquareEnergyDeposit"
-s:Sc/CBCTscorerSquare/Component                  = "CBCTImager"
-s:Sc/CBCTscorerSquare/OutputType                 = "binary"
-b:Sc/CBCTscorerSquare/OutputToConsole            = "False"
-i:Sc/CBCTscorerSquare/XBins                      = 512
-i:Sc/CBCTscorerSquare/YBins                      = 512
-i:Sc/CBCTscorerSquare/ZBins                      = 1
-s:Sc/CBCTscorerSquare/IfOutputFileAlreadyExists  = "Overwrite"
-s:Sc/CBCTscorerSquare/OutputFile                 = "CBCT_output/SimpleCBCT_Square"
-
 #============== Simple CBCT Scorer scatter (Edep) ========
 s:Sc/CBCTscorerScatter/Quantity                   = "EnergyDeposit"
 s:Sc/CBCTscorerScatter/Component                  = "CBCTImager"
