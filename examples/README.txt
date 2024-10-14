@@ -2,12 +2,12 @@ This directory contains 3 examples of TOPAS-imaging extension
 
 1. CBCTc
 - Main.txt, SimpleCBCT.txt, and SimpleCBCT_PCD.txt build a flat-panel detector, the Shepp-Logan phantom, and an X-ray tube.
+
 - Main.txt uses CBCTScorer, which scores optical photons.
 - Optical Spread Function can be enabled for variance reduction.
-- OSF.tar.gz should be unzipped to run it.
+- OSF.tar.gz should be unzipped to enable the varince reduction technique.
 
 - SimpleCBCT.txt and SimpleCBCT_PCD.txt score energy deposition of photon on the flat-panel detector.
-
 - SimpleCBCT_PCD.txt models a photon-counting detector using the energy binning feature of OpenTOPAS.
 
 - Examples will save projection data of the Shepp-Logan phantom.
